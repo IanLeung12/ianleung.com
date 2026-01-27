@@ -1,0 +1,80 @@
+{
+  "profile": {
+    "name": "Ian Leung",
+    "tagline": "Exploring the universe of technology",
+    "bio": "Welcome to my corner of the digital universe! I'm a passionate developer who loves creating beautiful and functional web experiences.",
+    "description": "Like the stars that form constellations, I believe in connecting ideas and technologies to build something meaningful.",
+    "email": "your.email@example.com",
+    "github": "https://github.com/IanLeung12",
+    "linkedin": "https://linkedin.com"
+  },
+  "skills": [
+    "JavaScript",
+    "HTML/CSS",
+    "React",
+    "Node.js",
+    "Python",
+    "Git"
+  ],
+  "projects": [
+    {
+      "id": 1,
+      "icon": "🌟",
+      "title": "Project Nebula",
+      "description": "A stunning web application that visualizes data in beautiful, interactive ways.",
+      "tools": ["React", "D3.js"],
+      "image": "https://via.placeholder.com/400x300?text=Project+Nebula",
+      "date": "2024",
+      "link": "#",
+      "featured": true
+    },
+    {
+      "id": 2,
+      "icon": "🚀",
+      "title": "Stellar API",
+      "description": "A robust backend service powering real-time applications with stellar performance.",
+      "tools": ["Node.js", "Express"],
+      "image": "https://via.placeholder.com/400x300?text=Stellar+API",
+      "date": "2024",
+      "link": "#",
+      "featured": true
+    },
+    {
+      "id": 3,
+      "icon": "🌌",
+      "title": "Galaxy Dashboard",
+      "description": "An intuitive dashboard for monitoring and managing complex systems.",
+      "tools": ["Vue.js", "Python"],
+      "image": "https://via.placeholder.com/400x300?text=Galaxy+Dashboard",
+      "date": "2023",
+      "link": "#",
+      "featured": true
+    }
+  ],
+  "experience": [
+    {
+      "id": 1,
+      "role": "poo poo",
+      "company": "Tech Company",
+      "date": "2023 - Present",
+      "description": "Leading development of core features and mentoring junior developers.",
+      "highlights": [
+        "Architected scalable microservices",
+        "Improved performance by 40%",
+        "Led team of 5 developers"
+      ]
+    },
+    {
+      "id": 2,
+      "role": "Full Stack Developer",
+      "company": "Startup Inc",
+      "date": "2021 - 2023",
+      "description": "Developed full-stack web applications using modern technologies.",
+      "highlights": [
+        "Built REST APIs",
+        "Designed responsive UIs",
+        "Deployed to production"
+      ]
+    }
+  ]
+}
