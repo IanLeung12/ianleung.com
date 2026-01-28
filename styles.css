@@ -31,15 +31,29 @@ body {
     overflow-x: hidden;
 }
 
-/* Canvas Background */
+/* Constellation Container */
+.constellation-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 92vh;
+    z-index: 0;
+    background: #0a0a0a;
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 80%, rgba(0, 0, 0, 0) 100%);
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 80%, rgba(0, 0, 0, 0) 100%);
+    will-change: transform;
+    contain: layout style paint;
+}
+
 #constellation-bg {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: -1;
-    background: #000000;
+    background: #0a0a0a;
+    will-change: contents;
 }
 
 /* Card Header */

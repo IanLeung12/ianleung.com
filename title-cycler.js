@@ -2,9 +2,9 @@
 // Add or remove titles from this array to customize what cycles
 const titles = [
     "Software Developer",
-    "Full Stack Engineer",
+    "Cat Lover",
     "Problem Solver",
-    "Tech Enthusiast"
+    "Gamer"
 ];
 
 class TitleCycler {

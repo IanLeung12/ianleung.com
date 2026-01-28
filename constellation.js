@@ -6,7 +6,7 @@ class ConstellationBackground {
         this.stars = [];
         this.mouse = { x: null, y: null };
         this.connectionDistance = 80;
-        this.numStars = 150;
+        this.numStars = 200;
         
         this.init();
         this.animate();
@@ -56,14 +56,25 @@ class ConstellationBackground {
         });
 
         window.addEventListener('mousemove', (e) => {
-            this.mouse.x = e.clientX;
-            this.mouse.y = e.clientY;
+            const rect = this.canvas.getBoundingClientRect();
+            this.mouse.x = e.clientX - rect.left;
+            this.mouse.y = e.clientY - rect.top + 15;
         });
 
         window.addEventListener('mouseout', () => {
             this.mouse.x = null;
             this.mouse.y = null;
         });
+
+        window.addEventListener('mousedown', () => {
+            this.mouse.clicking = true;
+        });
+
+        window.addEventListener('mouseup', () => {
+            this.mouse.clicking = false;
+        });
+        
+
     }
 
     drawStars() {
@@ -110,38 +121,40 @@ class ConstellationBackground {
                 const distance = Math.hypot(star1.x - star2.x, star1.y - star2.y);
                 
                 if (distance < this.connectionDistance) {
-                    const opacity = (1 - distance / this.connectionDistance) * 0.15;
+                    const opacity = (1 - distance / this.connectionDistance) * 0.25;
                     
                     this.ctx.beginPath();
                     this.ctx.moveTo(star1.x, star1.y);
                     this.ctx.lineTo(star2.x, star2.y);
                     this.ctx.strokeStyle = `rgba(212, 175, 55, ${opacity})`;
-                    this.ctx.lineWidth = 0.5;
+                    this.ctx.lineWidth = 0.7;
                     this.ctx.stroke();
                 }
             });
 
             // Connect to mouse
             if (this.mouse.x && this.mouse.y) {
+                const gravityMultiplier = this.mouse.clicking ? 4 : 1;
+                const rangeMultiplier = this.mouse.clicking ? 2.5 : 1.5;
                 const mouseDistance = Math.hypot(star1.x - this.mouse.x, star1.y - this.mouse.y);
                 
-                if (mouseDistance < this.connectionDistance * 1.5) {
-                    const opacity = (1 - mouseDistance / (this.connectionDistance * 1.5)) * 0.2;
+                if (mouseDistance < this.connectionDistance * rangeMultiplier) {
+                    const opacity = (1 - mouseDistance / (this.connectionDistance * rangeMultiplier)) * (this.mouse.clicking ? 0.5 : 0.35);
                     
                     this.ctx.beginPath();
                     this.ctx.moveTo(star1.x, star1.y);
                     this.ctx.lineTo(this.mouse.x, this.mouse.y);
                     this.ctx.strokeStyle = `rgba(244, 208, 63, ${opacity})`;
-                    this.ctx.lineWidth = 0.5;
+                    this.ctx.lineWidth = this.mouse.clicking ? 1.2 : 0.8;
                     this.ctx.stroke();
 
-                    // Attract stars slightly towards mouse
+                    // Attract stars towards mouse (stronger when clicking)
                     const angle = Math.atan2(this.mouse.y - star1.y, this.mouse.x - star1.x);
-                    star1.vx += Math.cos(angle) * 0.012;
-                    star1.vy += Math.sin(angle) * 0.012;
+                    star1.vx += Math.cos(angle) * 0.012 * gravityMultiplier;
+                    star1.vy += Math.sin(angle) * 0.012 * gravityMultiplier;
 
-                    // Limit velocity
-                    const maxVel = 1;
+                    // Limit velocity (higher when clicking)
+                    const maxVel = this.mouse.clicking ? 2.5 : 1;
                     star1.vx = Math.max(-maxVel, Math.min(maxVel, star1.vx));
                     star1.vy = Math.max(-maxVel, Math.min(maxVel, star1.vy));
                 }
