@@ -1,0 +1,162 @@
+{
+  "layers": [
+    2,
+    3,
+    2
+  ],
+  "layerLabels": [
+    null,
+    null,
+    null
+  ],
+  "nodes": [
+    {
+      "layer": 0,
+      "index": 0,
+      "title": "Mesozoic Labs",
+      "year": "2021-2023",
+      "type": "experience",
+      "description": "Developed full-stack web applications using modern technologies.",
+      "coverImage": "/images/mesozoic.png",
+      "mainImage": "",
+      "link": "",
+      "tags": [],
+      "company": "Mesozoic Labs",
+      "role": "Full Stack Developer",
+      "tools": [],
+      "highlights": [
+        "Built REST APIs",
+        "Designed responsive UIs",
+        "Deployed to production"
+      ]
+    },
+    {
+      "layer": 0,
+      "index": 1,
+      "title": "Fossil Finder",
+      "year": "2023",
+      "type": "project",
+      "description": "Data management dashboard for analysis.",
+      "coverImage": "/images/fossil-finder.png",
+      "mainImage": "",
+      "link": "#",
+      "tags": [],
+      "company": "",
+      "role": "",
+      "tools": [
+        "Vue.js",
+        "Python"
+      ],
+      "highlights": []
+    },
+    {
+      "layer": 1,
+      "index": 0,
+      "title": "Brontosaurus API",
+      "year": "2024",
+      "type": "project",
+      "description": "Scalable backend service. Handles heavy workloads.",
+      "coverImage": "/images/bronto-api.png",
+      "mainImage": "",
+      "link": "#",
+      "tags": [],
+      "company": "",
+      "role": "",
+      "tools": [
+        "Node.js",
+        "Express"
+      ],
+      "highlights": []
+    },
+    {
+      "layer": 1,
+      "index": 1,
+      "title": "Hackathon Win",
+      "year": "2024",
+      "type": "misc",
+      "description": "Won first place at DinoCon Hackathon",
+      "coverImage": "/images/hackathon.png",
+      "mainImage": "",
+      "link": "",
+      "tags": [
+        "Award",
+        "Competition"
+      ],
+      "company": "",
+      "role": "",
+      "tools": [],
+      "highlights": []
+    },
+    {
+      "layer": 1,
+      "index": 2,
+      "title": "Jurassic Tech",
+      "year": "2023-Present",
+      "type": "experience",
+      "description": "Leading development of core features and mentoring junior developers.",
+      "coverImage": "/images/jurassic.png",
+      "mainImage": "",
+      "link": "",
+      "tags": [],
+      "company": "Jurassic Tech",
+      "role": "Lead Developer",
+      "tools": [],
+      "highlights": [
+        "Architected scalable microservices",
+        "Improved performance by 40%",
+        "Led team of 5"
+      ]
+    },
+    {
+      "layer": 2,
+      "index": 0,
+      "title": "Project T-Rex",
+      "year": "2024",
+      "type": "project",
+      "description": "Data visualization web app. Modern charts and dashboards.",
+      "coverImage": "/images/trex.png",
+      "mainImage": "/images/trex-full.png",
+      "link": "#",
+      "tags": [],
+      "company": "",
+      "role": "",
+      "tools": [
+        "React",
+        "D3.js"
+      ],
+      "highlights": [
+        "Real-time data",
+        "Interactive charts",
+        "Dark mode"
+      ]
+    },
+    {
+      "layer": 2,
+      "index": 1,
+      "title": "Open Source",
+      "year": "2024",
+      "type": "misc",
+      "description": "Contributing to various open source projects",
+      "coverImage": "/images/opensource.png",
+      "mainImage": "",
+      "link": "https://github.com/IanLeung12",
+      "tags": [
+        "GitHub",
+        "Community"
+      ],
+      "company": "",
+      "role": "",
+      "tools": [],
+      "highlights": []
+    }
+  ],
+  "style": {
+    "nodeRadius": 28,
+    "connectionOpacity": 0.12,
+    "heightPercent": 0.85,
+    "nodeColor": "rgba(232, 196, 160, 0.6)",
+    "connectionColor": "rgba(232, 196, 160, {opacity})",
+    "glowColor": "rgba(232, 196, 160, 0.15)",
+    "hoverScale": 1.15
+  }
+}

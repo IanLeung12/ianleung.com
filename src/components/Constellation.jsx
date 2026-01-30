@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 const Constellation = () => {
   const canvasRef = useRef(null);
   const starsRef = useRef([]);
-  const mouseRef = useRef({ x: null, y: null, clicking: false });
+  const mouseRef = useRef({ x: null, y: null });
   const animationRef = useRef(null);
 
   const connectionDistance = 80;
@@ -118,26 +118,23 @@ const Constellation = () => {
         });
 
         if (mouse.x && mouse.y) {
-          const gravityMultiplier = mouse.clicking ? 4 : 1;
-          const rangeMultiplier = mouse.clicking ? 2.5 : 1.5;
           const mouseDistance = Math.hypot(star1.x - mouse.x, star1.y - mouse.y);
 
-          if (mouseDistance < connectionDistance * rangeMultiplier) {
-            const opacity = (1 - mouseDistance / (connectionDistance * rangeMultiplier)) * (mouse.clicking ? 0.5 : 0.35);
+          if (mouseDistance < connectionDistance * 1.5) {
+            const opacity = (1 - mouseDistance / (connectionDistance * 1.5)) * 0.35;
             ctx.beginPath();
             ctx.moveTo(star1.x, star1.y);
             ctx.lineTo(mouse.x, mouse.y);
             ctx.strokeStyle = `rgba(244, 208, 63, ${opacity})`;
-            ctx.lineWidth = mouse.clicking ? 1.2 : 0.8;
+            ctx.lineWidth = 0.8;
             ctx.stroke();
 
             const angle = Math.atan2(mouse.y - star1.y, mouse.x - star1.x);
-            star1.vx += Math.cos(angle) * 0.012 * gravityMultiplier;
-            star1.vy += Math.sin(angle) * 0.012 * gravityMultiplier;
+            star1.vx += Math.cos(angle) * 0.012;
+            star1.vy += Math.sin(angle) * 0.012;
 
-            const maxVel = mouse.clicking ? 2.5 : 1;
-            star1.vx = Math.max(-maxVel, Math.min(maxVel, star1.vx));
-            star1.vy = Math.max(-maxVel, Math.min(maxVel, star1.vy));
+            star1.vx = Math.max(-1, Math.min(1, star1.vx));
+            star1.vy = Math.max(-1, Math.min(1, star1.vy));
           }
         }
       });
@@ -154,20 +151,12 @@ const Constellation = () => {
     const handleMouseMove = (e) => {
       const rect = canvas.getBoundingClientRect();
       mouseRef.current.x = e.clientX - rect.left;
-      mouseRef.current.y = e.clientY - rect.top + 15;
+      mouseRef.current.y = e.clientY - rect.top;
     };
 
     const handleMouseOut = () => {
       mouseRef.current.x = null;
       mouseRef.current.y = null;
-    };
-
-    const handleMouseDown = () => {
-      mouseRef.current.clicking = true;
-    };
-
-    const handleMouseUp = () => {
-      mouseRef.current.clicking = false;
     };
 
     resize();
@@ -176,16 +165,12 @@ const Constellation = () => {
     window.addEventListener('resize', resize);
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseout', handleMouseOut);
-    window.addEventListener('mousedown', handleMouseDown);
-    window.addEventListener('mouseup', handleMouseUp);
 
     return () => {
       cancelAnimationFrame(animationRef.current);
       window.removeEventListener('resize', resize);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseout', handleMouseOut);
-      window.removeEventListener('mousedown', handleMouseDown);
-      window.removeEventListener('mouseup', handleMouseUp);
     };
   }, []);
 
