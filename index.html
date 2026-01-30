@@ -1,102 +1,13 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ian Leung | Personal Website</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-</head>
-<body>
-    <div class="constellation-container">
-        <canvas id="constellation-bg"></canvas>
-    </div>
-    
-    <!-- Minimal Business Card Header -->
-    <header class="card-header">
-        <div class="card-branding">
-            <h1 class="card-name">Ian Leung</h1>
-            <p class="card-title" id="cycling-title">Software Developer</p>
-        </div>
-        <nav class="nav-minimal">
-            <ul class="nav-links">
-                <li><a href="#about">About</a></li>
-                <li><a href="#projects">Projects</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <main>
-
-        <section id="about" class="about">
-            <div class="section-container">
-                <h2 class="section-title">About Me</h2>
-                <div class="about-content">
-                    <div class="about-text">
-                        <p>Welcome to my corner of the digital universe! I'm a passionate developer who loves creating beautiful and functional web experiences.</p>
-                        <p>I believe in connecting ideas and technologies to build something meaningful.</p>
-                        <div class="skills">
-                            <h3>Skills</h3>
-                            <div class="skill-tags">
-                                <span class="skill-tag">JavaScript</span>
-                                <span class="skill-tag">HTML/CSS</span>
-                                <span class="skill-tag">React</span>
-                                <span class="skill-tag">Node.js</span>
-                                <span class="skill-tag">Python</span>
-                                <span class="skill-tag">Git</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="about-image">
-                        <div class="image-frame">
-                            <div class="placeholder-avatar">IL</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="projects" class="projects">
-            <div class="section-container">
-                <h2 class="section-title">Projects</h2>
-                <div class="projects-grid">
-                    <!-- Populated by content-loader.js -->
-                </div>
-            </div>
-        </section>
-
-        <section id="experience" class="experience">
-            <!-- Populated by content-loader.js -->
-        </section>
-
-        <section id="contact" class="contact">
-            <div class="section-container">
-                <h2 class="section-title">Contact</h2>
-                <div class="contact-content">
-                    <p class="contact-intro">Feel free to reach out for collaborations, opportunities, or just to say hello.</p>
-                    <div class="contact-methods">
-                        <a href="mailto:your.email@example.com" class="contact-card">
-                            <span class="contact-label">Email</span>
-                        </a>
-                        <a href="https://github.com/IanLeung12" target="_blank" class="contact-card">
-                            <span class="contact-label">GitHub</span>
-                        </a>
-                        <a href="https://linkedin.com" target="_blank" class="contact-card">
-                            <span class="contact-label">LinkedIn</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <p>© 2026 Ian Leung. All rights reserved.</p>
-    </footer>
-
-    <script src="title-cycler.js"></script>
-    <script src="content-loader.js"></script>
-    <script src="constellation.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>iansweb</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>

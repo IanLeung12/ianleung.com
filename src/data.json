@@ -1,9 +1,9 @@
 {
   "profile": {
     "name": "Ian Leung",
-    "tagline": "Exploring the universe of technology",
-    "bio": "Welcome to my corner of the digital universe! I'm a passionate developer who loves creating beautiful and functional web experiences.",
-    "description": "Like the stars that form constellations, I believe in connecting ideas and technologies to build something meaningful.",
+    "tagline": "Unearthing the fossils of technology",
+    "bio": "Welcome to my prehistoric corner of the web! I'm a passionate developer who loves creating powerful and resilient applications that stand the test of time.",
+    "description": "Like the mighty dinosaurs that once ruled the Earth, I believe in building things that leave a lasting impact.",
     "email": "your.email@example.com",
     "github": "https://github.com/IanLeung12",
     "linkedin": "https://linkedin.com"
@@ -19,33 +19,33 @@
   "projects": [
     {
       "id": 1,
-      "icon": "🌟",
-      "title": "Project Nebula",
-      "description": "A stunning web application that visualizes data in beautiful, interactive ways.",
+      "icon": "🦖",
+      "title": "Project T-Rex",
+      "description": "A powerful web application that dominates data visualization with ferocious efficiency.",
       "tools": ["React", "D3.js"],
-      "image": "https://via.placeholder.com/400x300?text=Project+Nebula",
+      "image": "https://via.placeholder.com/400x300?text=Project+T-Rex",
       "date": "2024",
       "link": "#",
       "featured": true
     },
     {
       "id": 2,
-      "icon": "🚀",
-      "title": "Stellar API",
-      "description": "A robust backend service powering real-time applications with stellar performance.",
+      "icon": "🦕",
+      "title": "Brontosaurus API",
+      "description": "A massive backend service built to handle heavy loads with prehistoric strength.",
       "tools": ["Node.js", "Express"],
-      "image": "https://via.placeholder.com/400x300?text=Stellar+API",
+      "image": "https://via.placeholder.com/400x300?text=Brontosaurus+API",
       "date": "2024",
       "link": "#",
       "featured": true
     },
     {
       "id": 3,
-      "icon": "🌌",
-      "title": "Galaxy Dashboard",
-      "description": "An intuitive dashboard for monitoring and managing complex systems.",
+      "icon": "🥚",
+      "title": "Fossil Finder",
+      "description": "An intuitive dashboard for excavating and managing data like a true paleontologist.",
       "tools": ["Vue.js", "Python"],
-      "image": "https://via.placeholder.com/400x300?text=Galaxy+Dashboard",
+      "image": "https://via.placeholder.com/400x300?text=Fossil+Finder",
       "date": "2023",
       "link": "#",
       "featured": true
@@ -54,8 +54,8 @@
   "experience": [
     {
       "id": 1,
-      "role": "poo poo",
-      "company": "Tech Company",
+      "role": "Lead Developer",
+      "company": "Jurassic Tech",
       "date": "2023 - Present",
       "description": "Leading development of core features and mentoring junior developers.",
       "highlights": [
@@ -67,7 +67,7 @@
     {
       "id": 2,
       "role": "Full Stack Developer",
-      "company": "Startup Inc",
+      "company": "Mesozoic Labs",
       "date": "2021 - 2023",
       "description": "Developed full-stack web applications using modern technologies.",
       "highlights": [
