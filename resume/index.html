@@ -6,158 +6,31 @@
     <meta name="description" content="Ian Leung's resume." />
     <title>Resume | Ian Leung</title>
     <style>
-      :root {
-        color-scheme: light;
-        --bg: #f6f1ea;
-        --bg-accent: #e8dcc9;
-        --text: #1f1a17;
-        --muted: #685b51;
-        --card: rgba(255, 255, 255, 0.78);
-        --border: rgba(71, 54, 44, 0.15);
-        --shadow: 0 30px 80px rgba(64, 44, 28, 0.16);
-      }
-
       html,
       body {
         margin: 0;
-        min-height: 100%;
-        background:
-          radial-gradient(circle at top, rgba(255, 255, 255, 0.9), transparent 40%),
-          linear-gradient(180deg, var(--bg) 0%, var(--bg-accent) 100%);
-        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        color: var(--text);
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #ffffff;
       }
 
       body {
-        min-height: 100vh;
-        padding: 24px;
-        box-sizing: border-box;
-      }
-
-      .frame {
-        display: grid;
-        gap: 18px;
-        width: min(1200px, 100%);
-        margin: 0 auto;
-      }
-
-      .topbar,
-      .viewer {
-        border: 1px solid var(--border);
-        border-radius: 24px;
-        background: var(--card);
-        box-shadow: var(--shadow);
-        backdrop-filter: blur(16px);
-      }
-
-      .topbar {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        align-items: center;
-        gap: 14px;
-        padding: 18px 22px;
-      }
-
-      .titleblock h1 {
-        margin: 0;
-        font-size: 1.15rem;
-        letter-spacing: -0.03em;
-      }
-
-      .titleblock p {
-        margin: 4px 0 0;
-        color: var(--muted);
-        font-size: 0.95rem;
-      }
-
-      .actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-      }
-
-      a {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 42px;
-        padding: 0 16px;
-        border-radius: 999px;
-        border: 1px solid transparent;
-        text-decoration: none;
-        font-weight: 600;
-        transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
-      }
-
-      a:hover {
-        transform: translateY(-1px);
-      }
-
-      .primary {
-        background: var(--text);
-        color: #fff;
-      }
-
-      .secondary {
-        color: var(--text);
-        border-color: var(--border);
-        background: rgba(255, 255, 255, 0.5);
-      }
-
-      .viewer {
-        overflow: hidden;
-        min-height: min(85vh, 1100px);
+        width: 100%;
+        height: 100%;
       }
 
       iframe {
-        display: block;
+        position: fixed;
+        inset: 0;
         width: 100%;
         height: 100%;
-        min-height: inherit;
         border: 0;
         background: #fff;
-      }
-
-      @media (max-width: 700px) {
-        body {
-          padding: 14px;
-        }
-
-        .topbar {
-          padding: 16px;
-        }
-
-        .actions {
-          width: 100%;
-        }
-
-        a {
-          width: 100%;
-        }
       }
     </style>
   </head>
   <body>
-    <main class="frame">
-      <section class="topbar" aria-labelledby="resume-title">
-        <div class="titleblock">
-          <h1 id="resume-title">Resume</h1>
-          <p>Published from the CV repo and mirrored here.</p>
-        </div>
-        <div class="actions">
-          <a class="secondary" href="/">Home</a>
-          <a class="primary" href="/resume/cv.pdf" target="_blank" rel="noreferrer">Open PDF</a>
-        </div>
-      </section>
-
-      <section class="viewer" aria-label="Resume preview">
-        <iframe
-          src="/resume/cv.pdf"
-          title="Ian Leung resume"
-          loading="lazy"
-        ></iframe>
-      </section>
-    </main>
+    <iframe src="/resume/cv.pdf" title="Ian Leung resume"></iframe>
   </body>
 </html>
