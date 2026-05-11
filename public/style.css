@@ -7,13 +7,16 @@ body {
 }
 
 body {
+  position: relative;
   display: grid;
+  grid-template-rows: 1fr;
   place-items: center;
 }
 
 .wrap {
+  align-self: center;
   text-align: center;
-  display: flex;
+  display: flex-start;
   flex-direction: column;
   align-items: center;
   gap: 24px;
@@ -32,6 +35,8 @@ body {
 }
 
 .site-header {
+  position: absolute;
+  top: 12px;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
@@ -44,13 +49,18 @@ body {
 .site-title {
   text-align: center;
   justify-self: center;
+  margin: 0;
 }
 
 .site-nav {
   display: flex;
-  padding-left: 24px;
   align-items: center;
   justify-self: start;
+  padding-left: 24px;
+}
+
+.home-page {
+  grid-template-rows: 1fr;
 }
 
 /*
@@ -61,7 +71,7 @@ body {
 
 .about-page {
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows:  1fr;
   min-height: 100vh;
 }
 
@@ -70,11 +80,11 @@ body {
   align-items: flex-start;
   justify-self: start;
   text-align: left;
-  padding-left: 24px;
+  padding-left: 30px;
 }
 
 .about-page .title {
-  margin-bottom: 0px;
+  margin-bottom: 4px;
 }
 
 .about-page .content {
