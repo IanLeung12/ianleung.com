@@ -116,6 +116,14 @@ body {
   display: grid;
   gap: 24px;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  width: 100%;
+}
+
+.projects-page .wrap {
+  width: min(100%, 960px);
+  align-self: start;
+  justify-self: center;
+  padding-top: 64px;
 }
 
 .project-card {
@@ -126,6 +134,8 @@ body {
   cursor: pointer;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 4px 4px 1px rgba(0, 0, 0, 0.2), 
+              0 6px 12px rgba(0, 0, 0, 0.05);
 }
 
 .project-card::after {
@@ -133,8 +143,7 @@ body {
   position: absolute;
   inset: 0;
   border-radius: 10px;
-  box-shadow: inset 0 10px 16px rgba(120, 90, 90, 0.3),
-              0 6px 3px rgba(94, 72, 72, 0.4);
+  box-shadow: inset 0 0 10px 12px rgba(120, 90, 90, 0.2);
   pointer-events: none;
 }
 
@@ -169,6 +178,13 @@ body {
   border-radius: 12px;
   max-width: 640px;
   width: 90%;
+}
+
+.modal-content img{
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  border-radius: 8px;
 }
 
 .nav-btn {
