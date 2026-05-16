@@ -1,3 +1,5 @@
+import { punchHole, updateButtonDarkness } from './cursor';
+
 const canvas = document.getElementById('maze') as HTMLCanvasElement;
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -25,7 +27,6 @@ var walkIndex: Map<number,number> = new Map();
 let state: "choosing" | "walking" = "choosing";
 const stepsPerFrame = 3;
 const DIRS: number[][] = [[0, -1], [1, 0], [0, 1], [-1, 0]];
-
 
 function step(c: number): number {
     const x = c % cols;
@@ -96,6 +97,9 @@ function draw() {
             if ((c & W) === 0) { ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px, py + cellSize); ctx.stroke(); }
         }
     }
+
+    punchHole(ctx);
+    updateButtonDarkness();
 }
 
 function printMaze() { // for debugging
@@ -155,9 +159,10 @@ function animate() {
         }
         draw();
         requestAnimationFrame(animate);
-    } else if (current !== -1) {
+    } else{
         current = -1;
         draw();
+        requestAnimationFrame(animate);
     }
 }
 
