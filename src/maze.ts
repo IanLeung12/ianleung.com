@@ -18,8 +18,9 @@ function randCell(): number {
     return Math.floor(Math.random() * rows) * cols + Math.floor(Math.random() * cols);
 }
 var current: number = Math.floor(rows / 2) * cols + Math.floor(cols / 2);;
-maze[current] = 0;
-var remaining: number = cols * rows - 1;
+maze[current] = W;
+maze[current-1] = E;
+var remaining: number = cols * rows - 2;
 
 var walk: number[] = [];
 var walkIndex: Map<number,number> = new Map();
