@@ -12,6 +12,10 @@ const N: number = 1, E: number = 2, S: number = 4, W: number = 8;
 var cellSize: number = 40;
 var cols: number = Math.floor(width / cellSize);
 var rows: number = Math.floor(height / cellSize);
+const gridWidth = cols * cellSize;
+const gridHeight = rows * cellSize;
+const offsetX = Math.floor((width - gridWidth) / 2);
+const offsetY = Math.floor((height - gridHeight) / 2);
 var maze = new Int16Array(cols * rows).fill(-1)
 
 function randCell(): number {
@@ -85,8 +89,8 @@ function draw() {
     for (let y = 0; y < rows; y++) {
         for (let x = 0; x < cols; x++) {
             const c = maze[y * cols + x];
-            const px = x * cellSize;
-            const py = y * cellSize;
+            const px = x * cellSize + offsetX;
+            const py = y * cellSize + offsetY;
             if (c !== -1) {
                 ctx.fillStyle = "#f5f4f0";
                 ctx.fillRect(px, py, cellSize, cellSize);
