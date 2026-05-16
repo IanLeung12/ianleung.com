@@ -1,64 +1,110 @@
-var width: number = window.innerWidth;
-var height: number = window.innerHeight;
-type Cell = [number, number]
+const canvas = document.getElementById('maze') as HTMLCanvasElement;
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+const ctx = canvas.getContext('2d')!;
+
+var width: number = canvas.width;
+var height: number = canvas.height;
 const N: number = 1, E: number = 2, S: number = 4, W: number = 8;
 
-var cellSize: number = 20;
+var cellSize: number = 40;
 var cols: number = Math.floor(width / cellSize);
 var rows: number = Math.floor(height / cellSize);
-var maze = Array.from({ length: rows }, () =>
-  Array.from({ length: cols }, () => -1)
-);
+var maze = new Int16Array(cols * rows).fill(-1)
 
-var current: Cell = [Math.floor(Math.random() * cols), Math.floor(Math.random() * rows)];;
-maze[current[1]][current[0]] = 0;
+function randCell(): number {
+    return Math.floor(Math.random() * rows) * cols + Math.floor(Math.random() * cols);
+}
+var current: number = Math.floor(rows / 2) * cols + Math.floor(cols / 2);;
+maze[current] = 0;
 var remaining: number = cols * rows - 1;
 
-var visited: Set<number> = new Set();
-var walk: Cell[] = [];
+var walk: number[] = [];
+var walkIndex: Map<number,number> = new Map();
 
-const key = (x: number, y: number) => y * cols + x;
+let state: "choosing" | "walking" = "choosing";
+const stepsPerFrame = 3;
+const DIRS: number[][] = [[0, -1], [1, 0], [0, 1], [-1, 0]];
 
-const DIRS: Cell[] = [[0, -1], [1, 0], [0, 1], [-1, 0]];
 
-function step(current: Cell): boolean {
-    const [x, y] = current;
-    const options: Cell[] = [];
-    for (const [dx, dy] of DIRS) {
-        const nx = x + dx, ny = y + dy;
+function step(c: number): number {
+    const x = c % cols;
+    const y = (c / cols) | 0;
+
+    while (true) {
+        const [dx, dy] = DIRS[(Math.random() * 4) | 0];
+
+        const nx = x + dx;
+        const ny = y + dy;
+
         if (nx >= 0 && nx < cols && ny >= 0 && ny < rows) {
-            options.push([nx, ny]);
+            return ny * cols + nx;
         }
     }
-    if (options.length === 0) return false;
-    const [nx, ny] = options[Math.floor(Math.random() * options.length)];
-    current[0] = nx;
-    current[1] = ny;
-    return true;
 }
-function fill(walk: Cell[]) {
+
+function fill(walk: number[]) {
     for (let i = 0; i < walk.length - 1; i++) {
-        const [x1, y1] = walk[i];
-        const [x2, y2] = walk[i + 1];
-        if (maze[y1][x1] === -1) maze[y1][x1] = 0;
-        if (maze[y2][x2] === -1) maze[y2][x2] = 0;
+        const x1 = walk[i] % cols;
+        const y1 = Math.floor(walk[i] / cols);
+        const x2 = walk[i + 1] % cols;
+        const y2 = Math.floor(walk[i + 1] / cols);
+        if (maze[walk[i]] === -1) maze[walk[i]] = 0;
+        if (maze[walk[i + 1]] === -1) maze[walk[i + 1]] = 0;
         if (x2 === x1) {
-            maze[y1][x1] |= (y2 > y1 ? S : N);
-            maze[y2][x2] |= (y2 > y1 ? N : S);
+            maze[y1* cols + x1] |= (y2 > y1 ? S : N);
+            maze[y2* cols + x2] |= (y2 > y1 ? N : S);
         } else {
-            maze[y1][x1] |= (x2 > x1 ? E : W);
-            maze[y2][x2] |= (x2 > x1 ? W : E);
+            maze[y1* cols + x1] |= (x2 > x1 ? E : W);
+            maze[y2* cols + x2] |= (x2 > x1 ? W : E);
         }
         remaining--;
     }
 }
-function printMaze() {
+
+function draw() {
+    ctx.clearRect(0, 0, width, height);
+    ctx.strokeStyle = "rgb(190, 190, 190)";
+    ctx.lineWidth = 2;
+
+    ctx.fillStyle = "#fdfca1";
+    for (const c of walk) {
+        const x = c % cols;
+        const y = Math.floor(c / cols);
+        ctx.fillRect(x * cellSize + 2, y * cellSize + 2, cellSize - 4, cellSize - 4);
+    }
+    if (current !== -1) {
+        ctx.fillStyle = "#95ff95";
+        const x = current % cols;
+        const y = Math.floor(current / cols);
+        ctx.fillRect(x * cellSize + 2, y * cellSize + 2, cellSize - 4, cellSize - 4);
+    }
+
+    for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) {
+            const c = maze[y * cols + x];
+            const px = x * cellSize;
+            const py = y * cellSize;
+            if (c !== -1) {
+                ctx.fillStyle = "#f5f4f0";
+                ctx.fillRect(px, py, cellSize, cellSize);
+            }
+
+            if ((c & N) === 0) { ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px + cellSize, py); ctx.stroke(); }
+            if ((c & E) === 0) { ctx.beginPath(); ctx.moveTo(px + cellSize, py); ctx.lineTo(px + cellSize, py + cellSize); ctx.stroke(); }
+            if ((c & S) === 0) { ctx.beginPath(); ctx.moveTo(px, py + cellSize); ctx.lineTo(px + cellSize, py + cellSize); ctx.stroke(); }
+            if ((c & W) === 0) { ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px, py + cellSize); ctx.stroke(); }
+        }
+    }
+}
+
+function printMaze() { // for debugging
     let out = '+' + '---+'.repeat(cols) + '\n';
     for (let y = 0; y < rows; y++) {
         let top = '|';
         let bot = '+';
         for (let x = 0; x < cols; x++) {
-            const c = maze[y][x];
+            const c = maze[y * cols + x];
             top += '   ' + ((c & E) ? ' ' : '|');
             bot += ((c & S) ? '   ' : '---') + '+';
         }
@@ -67,29 +113,52 @@ function printMaze() {
     console.log(out);
 }
 
-while (remaining > 0) {
-    current = [Math.floor(Math.random() * cols), Math.floor(Math.random() * rows)];
-    while (maze[current[1]][current[0]] !== -1) {
-        current = [Math.floor(Math.random() * cols), Math.floor(Math.random() * rows)];
-    }
-    walk.push([current[0], current[1]]);
-    visited.add(key(current[0], current[1]));
-    while (step(current)) {
-        if (visited.has(key(current[0], current[1]))) {
-            let idx = walk.findIndex(([x, y]) => x === current[0] && y === current[1]);
-            walk = walk.slice(0, idx + 1);
-            visited = new Set(walk.map(([x, y]) => key(x, y)));
-        } else {
-            walk.push([current[0], current[1]]);
-            visited.add(key(current[0], current[1]));
-            if (maze[current[1]][current[0]] !== -1) {
-                fill(walk);
-                walk = [];
-                visited = new Set();
-                break;
+function animStep() {
+    if (state === "choosing") {
+        current = randCell();
+        while (maze[current] !== -1) current = randCell();
+        walk.push(current);
+        walkIndex.set(current, walk.length - 1);
+        state = "walking";
+        return;
+    } else {
+        let next: number;
+        if ((next = step(current)) !== -1) {
+            current = next;
+            if (walkIndex.has(current)) {
+                const idx = walkIndex.get(current)!;
+                for (let i = idx + 1; i < walk.length; i++) {
+                    walkIndex.delete(walk[i]);
+                }
+                walk.length = idx + 1;
+            } else {
+                walk.push(current);
+                walkIndex.set(current, walk.length - 1);
+                if (maze[current] !== -1) {
+                    fill(walk);
+                    walk.length = 0;
+                    walkIndex.clear();
+                    state = "choosing";
+                }
             }
         }
+        return;
     }
 }
-console.log(maze);
-printMaze();
+
+function animate() {
+    let steps = 0;
+    if (remaining > 0) {
+        while (steps < stepsPerFrame && remaining > 0) {
+            animStep();
+            steps++;
+        }
+        draw();
+        requestAnimationFrame(animate);
+    } else if (current !== -1) {
+        current = -1;
+        draw();
+    }
+}
+
+animate();

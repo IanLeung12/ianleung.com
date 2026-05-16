@@ -2,7 +2,7 @@ html,
 body {
   margin: 0;
   height: 100%;
-  background: #F9F6EE;
+  background: #ffffff;
   font-family: Arial, sans-serif;
 }
 
@@ -11,6 +11,7 @@ body {
   display: grid;
   grid-template-rows: 1fr;
   place-items: center;
+  background: transparent;
 }
 
 .wrap {
@@ -20,6 +21,13 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 24px;
+}
+
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
 }
 
 .title {
