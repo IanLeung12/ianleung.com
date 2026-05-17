@@ -1,57 +1,65 @@
 import { punchHole, updateButtonDarkness } from './cursor';
 
+// ---------- Canvas ----------
 const canvas = document.getElementById('maze') as HTMLCanvasElement;
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 const ctx = canvas.getContext('2d')!;
+const width = canvas.width;
+const height = canvas.height;
 
-var width: number = canvas.width;
-var height: number = canvas.height;
-const N: number = 1, E: number = 2, S: number = 4, W: number = 8;
-
-var cellSize: number = 40;
-var cols: number = Math.floor(width / cellSize);
-var rows: number = Math.floor(height / cellSize);
+// ---------- Grid ----------
+const cellSize = 40;
+const cols = Math.floor(width / cellSize);
+const rows = Math.floor(height / cellSize);
 const gridWidth = cols * cellSize;
 const gridHeight = rows * cellSize;
 const offsetX = Math.floor((width - gridWidth) / 2);
 const offsetY = Math.floor((height - gridHeight) / 2);
-var maze = new Int16Array(cols * rows).fill(-1)
 
+const N = 1, E = 2, S = 4, W = 8;
+const DIRS: number[][] = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+
+// ---------- Maze state ----------
+const maze = new Int16Array(cols * rows).fill(-1);
+let current: number = Math.floor(rows / 2) * cols + Math.floor(cols / 2);
+maze[current] = W;
+maze[current - 1] = E;
+let remaining: number = cols * rows - 2;
+
+// ---------- Wilson build state ----------
+let state: "choosing" | "walking" = "choosing";
+const walk: number[] = [];
+const walkIndex: Map<number, number> = new Map();
+
+// ---------- Pathfind state ----------
+const start = 0;
+const end = rows * cols - 1;
+const algo: "dfs" | "bfs" | "djikstra" | "astar" =
+    ["dfs", "bfs"][(Math.random() * 2) | 0] as "dfs" | "bfs";
+const stack: number[] = [];
+const queue: number[] = [];
+const visited = new Uint8Array(cols * rows).fill(0);
+const parent = new Int32Array(cols * rows).fill(-1);
+const path: number[] = [];
+visited[start] = 1;
+
+// ---------- Config ----------
+const stepsPerFrame = 3;
+
+// ---------- Helpers ----------
 function randCell(): number {
     return Math.floor(Math.random() * rows) * cols + Math.floor(Math.random() * cols);
 }
-var current: number = Math.floor(rows / 2) * cols + Math.floor(cols / 2);;
-maze[current] = W;
-maze[current-1] = E;
-var remaining: number = cols * rows - 2;
 
-var walk: number[] = [];
-var walkIndex: Map<number,number> = new Map();
-
-let state: "choosing" | "walking" = "choosing";
-let algo: "dfs" | "bfs" | "djikstra" | "astar" = ["dfs", "bfs"][(Math.random() * 2) | 0] as "dfs" | "bfs";
-var stack: number[] = [];
-const start = 0;
-const end = rows * cols - 1;
-const path: number[] = [];
-const parent = new Int32Array(cols * rows).fill(-1);
-const queue: number[] = []
-const visited = new Uint8Array(cols * rows).fill(0);
-visited[start] = 1;
-const stepsPerFrame = 3;
-const DIRS: number[][] = [[0, -1], [1, 0], [0, 1], [-1, 0]];
-
+// ---------- Build (Wilson's) ----------
 function step(c: number): number {
     const x = c % cols;
     const y = (c / cols) | 0;
-
     while (true) {
         const [dx, dy] = DIRS[(Math.random() * 4) | 0];
-
         const nx = x + dx;
         const ny = y + dy;
-
         if (nx >= 0 && nx < cols && ny >= 0 && ny < rows) {
             return ny * cols + nx;
         }
@@ -67,16 +75,82 @@ function fill(walk: number[]) {
         if (maze[walk[i]] === -1) maze[walk[i]] = 0;
         if (maze[walk[i + 1]] === -1) maze[walk[i + 1]] = 0;
         if (x2 === x1) {
-            maze[y1* cols + x1] |= (y2 > y1 ? S : N);
-            maze[y2* cols + x2] |= (y2 > y1 ? N : S);
+            maze[y1 * cols + x1] |= (y2 > y1 ? S : N);
+            maze[y2 * cols + x2] |= (y2 > y1 ? N : S);
         } else {
-            maze[y1* cols + x1] |= (x2 > x1 ? E : W);
-            maze[y2* cols + x2] |= (x2 > x1 ? W : E);
+            maze[y1 * cols + x1] |= (x2 > x1 ? E : W);
+            maze[y2 * cols + x2] |= (x2 > x1 ? W : E);
         }
         remaining--;
     }
 }
 
+function buildStep() {
+    if (state === "choosing") {
+        current = randCell();
+        while (maze[current] !== -1) current = randCell();
+        walk.push(current);
+        walkIndex.set(current, walk.length - 1);
+        state = "walking";
+        return;
+    }
+    let next: number;
+    if ((next = step(current)) !== -1) {
+        current = next;
+        if (walkIndex.has(current)) {
+            const idx = walkIndex.get(current)!;
+            for (let i = idx + 1; i < walk.length; i++) {
+                walkIndex.delete(walk[i]);
+            }
+            walk.length = idx + 1;
+        } else {
+            walk.push(current);
+            walkIndex.set(current, walk.length - 1);
+            if (maze[current] !== -1) {
+                fill(walk);
+                walk.length = 0;
+                walkIndex.clear();
+                state = "choosing";
+            }
+        }
+    }
+}
+
+// ---------- Pathfind ----------
+function pathStep() {
+    if (algo === "dfs") {
+        if (current === end) return;
+        current = stack.length > 0 ? stack.pop()! : start;
+        for (let i = 3; i >= 0; i--) {
+            const next = current + DIRS[i][0] + DIRS[i][1] * cols;
+            if (maze[current] & (1 << i) && !walkIndex.has(next)) {
+                stack.push(next);
+                walkIndex.set(next, current);
+            }
+        }
+        path.length = 0;
+        let p = current;
+        while (p !== start && walkIndex.has(p)) {
+            path.push(p);
+            p = walkIndex.get(p)!;
+        }
+        path.push(start);
+        path.reverse();
+    } else if (algo === "bfs") {
+        if (current === end) return;
+        current = queue.length > 0 ? queue.shift()! : start;
+        for (let i = 3; i >= 0; i--) {
+            const next = current + DIRS[i][0] + DIRS[i][1] * cols;
+            if (maze[current] & (1 << i) && !visited[next]) {
+                queue.push(next);
+                visited[next] = 1;
+                parent[next] = current;
+            }
+        }
+    }
+}
+
+// ---------- Render ----------
 function draw() {
     ctx.clearRect(0, 0, width, height);
     ctx.strokeStyle = "rgb(190, 190, 190)";
@@ -104,14 +178,13 @@ function draw() {
                 ctx.fillStyle = "#f5f4f0";
                 ctx.fillRect(px, py, cellSize, cellSize);
             }
-
             if ((c & N) === 0) { ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px + cellSize, py); ctx.stroke(); }
             if ((c & E) === 0) { ctx.beginPath(); ctx.moveTo(px + cellSize, py); ctx.lineTo(px + cellSize, py + cellSize); ctx.stroke(); }
             if ((c & S) === 0) { ctx.beginPath(); ctx.moveTo(px, py + cellSize); ctx.lineTo(px + cellSize, py + cellSize); ctx.stroke(); }
             if ((c & W) === 0) { ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px, py + cellSize); ctx.stroke(); }
 
             if (algo === "bfs" && remaining === 0 && visited[y * cols + x]) {
-                ctx.fillStyle = "#fdd4a5";
+                ctx.fillStyle = "#f5e3cf";
                 ctx.beginPath();
                 ctx.roundRect(px + 4, py + 4, cellSize - 8, cellSize - 8, 6);
                 ctx.fill();
@@ -124,22 +197,23 @@ function draw() {
         const y = Math.floor(p / cols);
         const px = x * cellSize + offsetX;
         const py = y * cellSize + offsetY;
-
         ctx.fillStyle = "#fdcdcd";
         ctx.beginPath();
         ctx.roundRect(px + 4, py + 4, cellSize - 8, cellSize - 8, 6);
         ctx.fill();
     }
 
-    if (parent[end] > 0) {
-        ctx.fillStyle = "#95ff95";
-        var temp: number = end;
+    if (parent[end] !== -1) {
+        ctx.fillStyle = "#c5f8c5";
+        let temp = end;
         while (temp !== start) {
             const x = temp % cols;
             const y = Math.floor(temp / cols);
             const px = x * cellSize + offsetX;
             const py = y * cellSize + offsetY;
-            ctx.fillRect(px + 2, py + 2, cellSize - 4, cellSize - 4);
+            ctx.beginPath();
+            ctx.roundRect(px + 4, py + 4, cellSize - 8, cellSize - 8, 6);
+            ctx.fill();
             temp = parent[temp];
         }
     }
@@ -148,113 +222,19 @@ function draw() {
     updateButtonDarkness();
 }
 
-function printMaze() { // for debugging
-    let out = '+' + '---+'.repeat(cols) + '\n';
-    for (let y = 0; y < rows; y++) {
-        let top = '|';
-        let bot = '+';
-        for (let x = 0; x < cols; x++) {
-            const c = maze[y * cols + x];
-            top += '   ' + ((c & E) ? ' ' : '|');
-            bot += ((c & S) ? '   ' : '---') + '+';
-        }
-        out += top + '\n' + bot + '\n';
-    }
-    console.log(out);
-}
-
-function buildStep() {
-    if (state === "choosing") {
-        current = randCell();
-        while (maze[current] !== -1) current = randCell();
-        walk.push(current);
-        walkIndex.set(current, walk.length - 1);
-        state = "walking";
-        return;
-    } else {
-        let next: number;
-        if ((next = step(current)) !== -1) {
-            current = next;
-            if (walkIndex.has(current)) {
-                const idx = walkIndex.get(current)!;
-                for (let i = idx + 1; i < walk.length; i++) {
-                    walkIndex.delete(walk[i]);
-                }
-                walk.length = idx + 1;
-            } else {
-                walk.push(current);
-                walkIndex.set(current, walk.length - 1);
-                if (maze[current] !== -1) {
-                    fill(walk);
-                    walk.length = 0;
-                    walkIndex.clear();
-                    state = "choosing";
-                }
-            }
-        }
-        return;
-    }
-}
-
-function pathStep() {
-    if (algo === "dfs") {
-        if (current === end) {
-            return;
-        }
-        if (stack.length > 0) {
-            current = stack.pop()!;
-        } else {
-            current = start;
-        }
-        for (let i = 3; i >= 0; i--) {
-            const next = current + DIRS[i][0] + DIRS[i][1] * cols;
-            if (maze[current] & (1 << i) && !walkIndex.has(next)) {
-                stack.push(next);
-                walkIndex.set(next, current);
-            }
-        }
-        path.length = 0;
-        let p = current;
-        while (p !== start && walkIndex.has(p)) {
-            path.push(p);
-            p = walkIndex.get(p)!;
-        }
-        path.push(start);
-        path.reverse(); // now start -> current
-    } else if (algo === "bfs") {
-        if (current === end) {
-            return;
-        }else if (queue.length > 0) {
-            current = queue.shift()!;
-        } else {
-            current = start;
-        }
-        for (let i = 3; i >= 0; i--) {
-            const next = current + DIRS[i][0] + DIRS[i][1] * cols;
-            if (maze[current] & (1 << i) && !visited[next]) {
-                queue.push(next);
-                visited[next] = 1;
-                parent[next] = current;
-            }
-        }
-    }
-    return;
-}
-
+// ---------- Main loop ----------
 function animate() {
-    let steps = 0;
     if (remaining > 0) {
+        let steps = 0;
         while (steps < stepsPerFrame && remaining > 0) {
             buildStep();
             steps++;
         }
-        draw();
-        requestAnimationFrame(animate);
-    } else{
+    } else {
         pathStep();
-        draw();
-        requestAnimationFrame(animate);
     }
+    draw();
+    requestAnimationFrame(animate);
 }
 
 animate();
