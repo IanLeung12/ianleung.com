@@ -30,6 +30,11 @@ var walk: number[] = [];
 var walkIndex: Map<number,number> = new Map();
 
 let state: "choosing" | "walking" = "choosing";
+let algo: "dfs" | "bfs" | "djikstra" | "astar" = "dfs";
+var stack: number[] = [];
+const start = 0;
+const end = rows * cols - 1;
+const path: number[] = [];
 const stepsPerFrame = 3;
 const DIRS: number[][] = [[0, -1], [1, 0], [0, 1], [-1, 0]];
 
@@ -103,6 +108,18 @@ function draw() {
         }
     }
 
+    for (const p of path) {
+        const x = p % cols;
+        const y = Math.floor(p / cols);
+        const px = x * cellSize + offsetX;
+        const py = y * cellSize + offsetY;
+
+        ctx.fillStyle = "#fdcdcd";
+        ctx.beginPath();
+        ctx.roundRect(px + 4, py + 4, cellSize - 8, cellSize - 8, 6);
+        ctx.fill();
+    }
+
     punchHole(ctx);
     updateButtonDarkness();
 }
@@ -122,7 +139,7 @@ function printMaze() { // for debugging
     console.log(out);
 }
 
-function animStep() {
+function buildStep() {
     if (state === "choosing") {
         current = randCell();
         while (maze[current] !== -1) current = randCell();
@@ -155,17 +172,46 @@ function animStep() {
     }
 }
 
+function pathStep() {
+    if (algo === "dfs") {
+        if (current === end) {
+            return;
+        }
+        if (stack.length > 0) {
+            current = stack.pop()!;
+        } else {
+            current = start;
+        }
+        for (let i = 3; i >= 0; i--) {
+            const next = current + DIRS[i][0] + DIRS[i][1] * cols;
+            if (maze[current] & (1 << i) && !walkIndex.has(next)) {
+                stack.push(next);
+                walkIndex.set(next, current);
+            }
+        }
+        path.length = 0;
+        let p = current;
+        while (p !== start && walkIndex.has(p)) {
+            path.push(p);
+            p = walkIndex.get(p)!;
+        }
+        path.push(start);
+        path.reverse(); // now start -> current
+    }
+    return;
+}
+
 function animate() {
     let steps = 0;
     if (remaining > 0) {
         while (steps < stepsPerFrame && remaining > 0) {
-            animStep();
+            buildStep();
             steps++;
         }
         draw();
         requestAnimationFrame(animate);
     } else{
-        current = -1;
+        pathStep();
         draw();
         requestAnimationFrame(animate);
     }
