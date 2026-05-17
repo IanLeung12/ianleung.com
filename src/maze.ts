@@ -30,11 +30,15 @@ var walk: number[] = [];
 var walkIndex: Map<number,number> = new Map();
 
 let state: "choosing" | "walking" = "choosing";
-let algo: "dfs" | "bfs" | "djikstra" | "astar" = "dfs";
+let algo: "dfs" | "bfs" | "djikstra" | "astar" = ["dfs", "bfs"][(Math.random() * 2) | 0] as "dfs" | "bfs";
 var stack: number[] = [];
 const start = 0;
 const end = rows * cols - 1;
 const path: number[] = [];
+const parent = new Int32Array(cols * rows).fill(-1);
+const queue: number[] = []
+const visited = new Uint8Array(cols * rows).fill(0);
+visited[start] = 1;
 const stepsPerFrame = 3;
 const DIRS: number[][] = [[0, -1], [1, 0], [0, 1], [-1, 0]];
 
@@ -105,6 +109,13 @@ function draw() {
             if ((c & E) === 0) { ctx.beginPath(); ctx.moveTo(px + cellSize, py); ctx.lineTo(px + cellSize, py + cellSize); ctx.stroke(); }
             if ((c & S) === 0) { ctx.beginPath(); ctx.moveTo(px, py + cellSize); ctx.lineTo(px + cellSize, py + cellSize); ctx.stroke(); }
             if ((c & W) === 0) { ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px, py + cellSize); ctx.stroke(); }
+
+            if (algo === "bfs" && remaining === 0 && visited[y * cols + x]) {
+                ctx.fillStyle = "#fdd4a5";
+                ctx.beginPath();
+                ctx.roundRect(px + 4, py + 4, cellSize - 8, cellSize - 8, 6);
+                ctx.fill();
+            }
         }
     }
 
@@ -118,6 +129,19 @@ function draw() {
         ctx.beginPath();
         ctx.roundRect(px + 4, py + 4, cellSize - 8, cellSize - 8, 6);
         ctx.fill();
+    }
+
+    if (parent[end] > 0) {
+        ctx.fillStyle = "#95ff95";
+        var temp: number = end;
+        while (temp !== start) {
+            const x = temp % cols;
+            const y = Math.floor(temp / cols);
+            const px = x * cellSize + offsetX;
+            const py = y * cellSize + offsetY;
+            ctx.fillRect(px + 2, py + 2, cellSize - 4, cellSize - 4);
+            temp = parent[temp];
+        }
     }
 
     punchHole(ctx);
@@ -197,6 +221,22 @@ function pathStep() {
         }
         path.push(start);
         path.reverse(); // now start -> current
+    } else if (algo === "bfs") {
+        if (current === end) {
+            return;
+        }else if (queue.length > 0) {
+            current = queue.shift()!;
+        } else {
+            current = start;
+        }
+        for (let i = 3; i >= 0; i--) {
+            const next = current + DIRS[i][0] + DIRS[i][1] * cols;
+            if (maze[current] & (1 << i) && !visited[next]) {
+                queue.push(next);
+                visited[next] = 1;
+                parent[next] = current;
+            }
+        }
     }
     return;
 }
