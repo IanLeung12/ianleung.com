@@ -166,7 +166,6 @@ function pathStep() {
         current = heapq.pop()!;
         if (closed[current]) return;
         closed[current] = 1;
-        visited[current] = 1;
         forEachOpenNeighbor(current, (next) => {
             if (closed[next]) return;
             const tempg = gscore[current] + 1;
@@ -226,9 +225,12 @@ function draw() {
     drawWalls();
 
     if (remaining === 0) {
-        for (let i = 0; i < visited.length; i++) {
-            if (visited[i]) fillRoundCell(i, COLOR.visited);
+        if (algo === "bfs") {
+            for (let i = 0; i < visited.length; i++) {
+                if (visited[i]) fillRoundCell(i, COLOR.visited);
+            }
         }
+        
         const pathColor =
             algo === "astar" ? COLOR.pathAstar :
             algo === "bfs"   ? COLOR.pathBfs   :
