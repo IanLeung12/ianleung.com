@@ -17,7 +17,7 @@ const offsetX = Math.floor((width - cols * cellSize) / 2);
 const offsetY = Math.floor((height - rows * cellSize) / 2);
 
 const N = 1, E = 2, S = 4, W = 8;
-const DIRS: [number, number][] = [[-1, 0], [0, 1], [1, 0], [0, -1]];
+const DIRS: [number, number][] = [[0, -1], [1, 0], [0, 1], [-1, 0]];
 const NEIGHBOR_OFFSET = DIRS.map(([dx, dy]) => dy * cols + dx);
 
 // ---------- Colors ----------
@@ -27,7 +27,7 @@ const COLOR = {
     walk: "#fdfca1",
     current: "#95ff95",
     visited: "#f5e3cf",
-    pathBfs: "#c5f8c5",
+    pathEnd: "#c5f8c5",
     pathDfs: "#fdcdcd",
     pathAstar: "#c5eef8",
 } as const;
@@ -78,7 +78,7 @@ heapq.push(start, heuristic(start));
 
 // Iterate cells reachable from c via maze openings
 function forEachOpenNeighbor(c: number, cb: (next: number, dir: number) => void) {
-    for (let i = 0; i < 4; i++) {
+    for (let i = 3; i >= 0; i--) {
         if (maze[c] & (1 << i)) cb(c + NEIGHBOR_OFFSET[i], i);
     }
 }
@@ -233,9 +233,9 @@ function draw() {
         
         const pathColor =
             algo === "astar" ? COLOR.pathAstar :
-            algo === "bfs"   ? COLOR.pathBfs   :
+            algo === "bfs"   ? COLOR.visited   :
                                COLOR.pathDfs;
-        if (parent[end] !== -1) tracePath(end, pathColor);
+        if (parent[end] !== -1) tracePath(end, COLOR.pathEnd);
         else if (parent[current] !== -1) tracePath(current, pathColor);
     }
 
