@@ -1,4 +1,5 @@
 import { punchHole, updateButtonDarkness } from './cursor';
+import { HeapQueue } from './heapqueue';
 
 // ---------- Canvas ----------
 const canvas = document.getElementById('maze') as HTMLCanvasElement;
@@ -35,14 +36,19 @@ const walkIndex: Map<number, number> = new Map();
 // ---------- Pathfind state ----------
 const start = 0;
 const end = rows * cols - 1;
-const algo: "dfs" | "bfs" | "djikstra" | "astar" =
-    ["dfs", "bfs"][(Math.random() * 2) | 0] as "dfs" | "bfs";
+const algo: "dfs" | "bfs"  | "astar" = 
+    (["dfs", "bfs", "astar"] as const)[(Math.random() * 3) | 0];
 const stack: number[] = [];
 const queue: number[] = [];
 const visited = new Uint8Array(cols * rows).fill(0);
 const parent = new Int32Array(cols * rows).fill(-1);
 const path: number[] = [];
-visited[start] = 1;
+const heapq = new HeapQueue<number>();
+const gscore = new Int32Array(cols * rows).fill(cols * rows + 1);
+const closed = new Uint8Array(cols * rows).fill(0);
+heapq.push(start, heuristic(0, 0));
+gscore[start] = 0;
+visited[start] = 1; 
 
 // ---------- Config ----------
 const stepsPerFrame = 3;
@@ -116,6 +122,11 @@ function buildStep() {
     }
 }
 
+
+function heuristic(x: number, y: number): number {
+    return Math.abs(x - cols + 1) + Math.abs(y - rows + 1);
+}
+
 // ---------- Pathfind ----------
 function pathStep() {
     if (algo === "dfs") {
@@ -123,19 +134,12 @@ function pathStep() {
         current = stack.length > 0 ? stack.pop()! : start;
         for (let i = 3; i >= 0; i--) {
             const next = current + DIRS[i][0] + DIRS[i][1] * cols;
-            if (maze[current] & (1 << i) && !walkIndex.has(next)) {
+            if (maze[current] & (1 << i) && !visited[next]) {
                 stack.push(next);
-                walkIndex.set(next, current);
+                visited[next] = 1;
+                parent[next] = current;
             }
         }
-        path.length = 0;
-        let p = current;
-        while (p !== start && walkIndex.has(p)) {
-            path.push(p);
-            p = walkIndex.get(p)!;
-        }
-        path.push(start);
-        path.reverse();
     } else if (algo === "bfs") {
         if (current === end) return;
         current = queue.length > 0 ? queue.shift()! : start;
@@ -147,7 +151,26 @@ function pathStep() {
                 parent[next] = current;
             }
         }
+    } else if (algo === "astar") {
+        current = heapq.pop()!;
+        if (closed[current]) return;
+        closed[current] = 1;
+        if (current === end) return;
+
+        for (let i = 3; i >= 0; i--) {
+            const next = current + DIRS[i][0] + DIRS[i][1] * cols;
+            if (maze[current] & (1 << i) && !closed[next]) {
+                const tempg = gscore[current] + 1;
+                if (tempg < gscore[next]) {
+                    parent[next] = current;
+                    gscore[next] = tempg;
+                    const hscore = heuristic(next % cols, Math.floor(next / cols));
+                    heapq.push(next, gscore[next] + hscore);
+                }
+            }
+        }
     }
+    return;
 }
 
 // ---------- Render ----------
@@ -192,21 +215,23 @@ function draw() {
         }
     }
 
-    for (const p of path) {
-        const x = p % cols;
-        const y = Math.floor(p / cols);
-        const px = x * cellSize + offsetX;
-        const py = y * cellSize + offsetY;
-        ctx.fillStyle = "#fdcdcd";
-        ctx.beginPath();
-        ctx.roundRect(px + 4, py + 4, cellSize - 8, cellSize - 8, 6);
-        ctx.fill();
-    }
-
     if (parent[end] !== -1) {
         ctx.fillStyle = "#c5f8c5";
         let temp = end;
-        while (temp !== start) {
+        while (temp !== -1) {
+            const x = temp % cols;
+            const y = Math.floor(temp / cols);
+            const px = x * cellSize + offsetX;
+            const py = y * cellSize + offsetY;
+            ctx.beginPath();
+            ctx.roundRect(px + 4, py + 4, cellSize - 8, cellSize - 8, 6);
+            ctx.fill();
+            temp = parent[temp];
+        }
+    } else if ((algo === "astar" || algo === "dfs") && parent[current] !== -1) {
+        ctx.fillStyle = algo === "astar" ? "#c5eef8" : "#fdcdcd";
+        let temp = current;
+        while (temp !== -1) {
             const x = temp % cols;
             const y = Math.floor(temp / cols);
             const px = x * cellSize + offsetX;

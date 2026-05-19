@@ -40,6 +40,7 @@ canvas {
   gap: 24px;
   justify-content: center;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .site-header {
@@ -210,4 +211,19 @@ canvas {
 .nav-btn:hover {
   text-decoration: none;
   opacity: 1;
+}
+
+@media (max-width: 600px) {
+  .wrap {
+    padding: 0 16px;
+  }
+
+  .content {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .content a {
+    word-break: break-all;
+  }
 }
