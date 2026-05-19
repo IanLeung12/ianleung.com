@@ -17,7 +17,7 @@ const offsetX = Math.floor((width - cols * cellSize) / 2);
 const offsetY = Math.floor((height - rows * cellSize) / 2);
 
 const N = 1, E = 2, S = 4, W = 8;
-const DIRS: [number, number][] = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+const DIRS: [number, number][] = [[-1, 0], [0, 1], [1, 0], [0, -1]];
 const NEIGHBOR_OFFSET = DIRS.map(([dx, dy]) => dy * cols + dx);
 
 // ---------- Colors ----------
