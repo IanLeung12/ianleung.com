@@ -214,20 +214,25 @@ canvas {
  * Projects page
  * ---------------------------------- */
 .projects-page .wrap {
-  width: min(100%, 960px);
+  width: min(100%, 1020px);
   align-self: start;
   justify-self: center;
   padding-top: var(--space-16);
 }
 
 .projects-grid {
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
   gap: var(--space-6);
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  justify-content: center;
   width: 100%;
 }
 
 .project-card {
+  flex: 0 1 300px;
+  width: 300px;
+  max-width: 300px;
+  box-sizing: border-box;
   --pad: var(--space-4);
   background: var(--surface);
   border: 1px solid var(--border);
