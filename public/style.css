@@ -234,6 +234,8 @@ canvas {
   max-width: 300px;
   box-sizing: border-box;
   --pad: var(--space-4);
+  --rx: 0deg;
+  --ry: 0deg;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -242,12 +244,21 @@ canvas {
   overflow: hidden;
   text-align: left;
   box-shadow: var(--shadow);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
 }
 
 .project-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  transform: perspective(800px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(-3px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1), 0 24px 40px rgba(0, 0, 0, 0.18);
+}
+
+@media (hover: none) {
+  .project-card {
+    transform: none;
+  }
 }
 
 .project-card img {

@@ -48,6 +48,37 @@ grid.innerHTML = typedProjects
 
 grid.querySelectorAll(".project-card").forEach((card, i) => {
   card.addEventListener("click", () => openModal(typedProjects[i]));
+
+  const maxTilt = 20;
+  let rafId = 0;
+  let lastEvent: PointerEvent | null = null;
+
+  const updateFromEvent = () => {
+    if (!lastEvent) return;
+    const rect = card.getBoundingClientRect();
+    const x = (lastEvent.clientX - rect.left) / rect.width;
+    const y = (lastEvent.clientY - rect.top) / rect.height;
+    const nx = x - 0.5;
+    const ny = y - 0.5;
+
+    card.style.setProperty("--rx", `${(-ny * maxTilt).toFixed(2)}deg`);
+    card.style.setProperty("--ry", `${(nx * maxTilt).toFixed(2)}deg`);
+  };
+
+  card.addEventListener("pointermove", (e: PointerEvent) => {
+    lastEvent = e;
+    if (rafId) return;
+    rafId = requestAnimationFrame(() => {
+      rafId = 0;
+      updateFromEvent();
+    });
+  });
+
+  card.addEventListener("pointerleave", () => {
+    lastEvent = null;
+    card.style.setProperty("--rx", "0deg");
+    card.style.setProperty("--ry", "0deg");
+  });
 });
 
 modal.addEventListener("click", (e: MouseEvent) => {
