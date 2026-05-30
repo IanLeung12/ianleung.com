@@ -7,21 +7,28 @@ const idleShrinkMs = 800;
 const radiusInMs = 80;
 const radiusOutMs = 420;
 const idleMinRadius = 32;
+const trailMax = 14;
+const trailMaxAgeMs = 320;
+const trailMinRadiusScale = 0.35;
+const trailMaxRadiusScale = 0.85;
 
 let smoothX = cursorX;
 let smoothY = cursorY;
 let lastMoveTime = 0;
 let lastFrameTime = 0;
 let currentRadius = holeRadius;
+const trail: Array<{ x: number; y: number; time: number }> = [];
 
 const buttons = Array.from(document.querySelectorAll(".nav-btn")) as HTMLElement[];
-const maxDistPadding = 20; // bigger = wider influence
+const maxDistPadding = 30; // bigger = wider influence
 const minOpacity = 0.55; // lowest opacity near cursor
 
 document.addEventListener("mousemove", (e) => {
     cursorX = e.clientX;
     cursorY = e.clientY;
     lastMoveTime = performance.now();
+  trail.push({ x: cursorX, y: cursorY, time: lastMoveTime });
+  if (trail.length > trailMax) trail.shift();
 });
 
 function updateCursorState() {
@@ -55,36 +62,49 @@ export function punchHole(ctx: CanvasRenderingContext2D) {
     ctx.save();
     ctx.globalCompositeOperation = "destination-out";
   const { x: cx, y: cy, radius } = updateCursorState();
+  const now = performance.now();
   const dotSpacing = 10;
   const maxDotRadius = 4;
   const minDotRadius = 0.8;
-  const fadeRadius = radius;
 
-  const startX = Math.floor((cx - fadeRadius) / dotSpacing) * dotSpacing;
-  const endX = Math.ceil((cx + fadeRadius) / dotSpacing) * dotSpacing;
-  const startY = Math.floor((cy - fadeRadius) / dotSpacing) * dotSpacing;
-  const endY = Math.ceil((cy + fadeRadius) / dotSpacing) * dotSpacing;
+  const drawHalftone = (x: number, y: number, fadeRadius: number, alphaScale: number) => {
+    const startX = Math.floor((x - fadeRadius) / dotSpacing) * dotSpacing;
+    const endX = Math.ceil((x + fadeRadius) / dotSpacing) * dotSpacing;
+    const startY = Math.floor((y - fadeRadius) / dotSpacing) * dotSpacing;
+    const endY = Math.ceil((y + fadeRadius) / dotSpacing) * dotSpacing;
 
-  for (let gy = startY; gy <= endY; gy += dotSpacing) {
-    for (let gx = startX; gx <= endX; gx += dotSpacing) {
-      const dx = gx - cx;
-      const dy = gy - cy;
-      const dist = Math.hypot(dx, dy);
-      if (dist > fadeRadius) continue;
+    for (let gy = startY; gy <= endY; gy += dotSpacing) {
+      for (let gx = startX; gx <= endX; gx += dotSpacing) {
+        const dx = gx - x;
+        const dy = gy - y;
+        const dist = Math.max(Math.abs(dx), Math.abs(dy));
+        if (dist > fadeRadius) continue;
 
-      let t = 1 - dist / fadeRadius;
-      t = Math.max(0, Math.min(1, t));
-      t = t * t * (3 - 2 * t); // smoothstep
+        let t = 1 - dist / fadeRadius;
+        t = Math.max(0, Math.min(1, t));
+        t = t * t * (3 - 2 * t); // smoothstep
 
-      const r = minDotRadius + (maxDotRadius - minDotRadius) * t;
-      const alpha = 0.1 + 0.8 * t;
+        const r = minDotRadius + (maxDotRadius - minDotRadius) * t;
+        const alpha = (0.08 + 0.8 * t) * alphaScale;
 
-      ctx.fillStyle = `rgba(0, 0, 0, ${alpha})`;
-      ctx.beginPath();
-      ctx.arc(gx, gy, r, 0, Math.PI * 2);
-      ctx.fill();
+        if (alpha <= 0) continue;
+        ctx.fillStyle = `rgba(0, 0, 0, ${alpha})`;
+        ctx.beginPath();
+        ctx.arc(gx, gy, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
+  };
+
+  for (const p of trail) {
+    const age = now - p.time;
+    if (age > trailMaxAgeMs) continue;
+    const t = 1 - age / trailMaxAgeMs;
+    const scale = trailMinRadiusScale + (trailMaxRadiusScale - trailMinRadiusScale) * t;
+    drawHalftone(p.x, p.y, radius * scale, t);
   }
+
+  drawHalftone(cx, cy, radius, 1);
     ctx.restore();
 }
 
