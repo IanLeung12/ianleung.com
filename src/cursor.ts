@@ -1,7 +1,6 @@
 let cursorX = -9999;
 let cursorY = -9999;
 const holeRadius = 70;
-const cursorLagMs = 120;
 const idleDelayMs = 200;
 const idleShrinkMs = 800;
 const radiusInMs = 80;
@@ -12,8 +11,6 @@ const trailMaxAgeMs = 320;
 const trailMinRadiusScale = 0.35;
 const trailMaxRadiusScale = 0.85;
 
-let smoothX = cursorX;
-let smoothY = cursorY;
 let lastMoveTime = 0;
 let lastFrameTime = 0;
 let currentRadius = holeRadius;
@@ -37,15 +34,6 @@ function updateCursorState() {
   const dt = now - lastFrameTime;
   lastFrameTime = now;
 
-  if (smoothX === -9999 || smoothY === -9999) {
-    smoothX = cursorX;
-    smoothY = cursorY;
-  }
-
-  const k = 1 - Math.exp(-dt / cursorLagMs);
-  smoothX += (cursorX - smoothX) * k;
-  smoothY += (cursorY - smoothY) * k;
-
   const idleMs = lastMoveTime === 0 ? 0 : now - lastMoveTime;
   let idleT = (idleMs - idleDelayMs) / idleShrinkMs;
   idleT = Math.max(0, Math.min(1, idleT));
@@ -55,7 +43,7 @@ function updateCursorState() {
   const rk = 1 - Math.exp(-dt / radiusTau);
   currentRadius += (targetRadius - currentRadius) * rk;
 
-  return { x: smoothX, y: smoothY, radius: currentRadius };
+  return { x: cursorX, y: cursorY, radius: currentRadius };
 }
 
 export function punchHole(ctx: CanvasRenderingContext2D) {
@@ -105,7 +93,7 @@ export function punchHole(ctx: CanvasRenderingContext2D) {
   }
 
   drawHalftone(cx, cy, radius, 1);
-    ctx.restore();
+  ctx.restore();
 }
 
 export function updateButtonDarkness() {
