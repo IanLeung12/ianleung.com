@@ -7,7 +7,7 @@ const radiusInMs = 80;
 const radiusOutMs = 420;
 const idleMinRadius = 32;
 const trailMax = 14;
-const trailMaxAgeMs = 320;
+const trailMaxAgeMs = 250;
 const trailMinRadiusScale = 0.35;
 const trailMaxRadiusScale = 0.85;
 
