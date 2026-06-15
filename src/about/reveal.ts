@@ -71,12 +71,14 @@ function init(): void {
     const wr = word.getBoundingClientRect();
     const rect = popover.getBoundingClientRect();
     const vw = window.innerWidth;
+    const vh = window.innerHeight;
 
     let left = wr.left + wr.width / 2 - rect.width / 2;
     left = Math.max(MARGIN, Math.min(left, vw - MARGIN - rect.width));
 
     let top = wr.top - OFFSET - rect.height; // above the word by default
     if (top < MARGIN) top = wr.bottom + OFFSET; // flip below if no room above
+    top = Math.max(MARGIN, Math.min(top, vh - MARGIN - rect.height)); // keep fully on-screen
 
     popover.style.left = `${left}px`;
     popover.style.top = `${top}px`;
@@ -124,7 +126,10 @@ function init(): void {
         positionAtPoint(lastX, lastY);
       });
       word.addEventListener('pointermove', onPointerMove);
-      word.addEventListener('pointerleave', hide);
+      word.addEventListener('pointerleave', () => {
+        // Don't hide while the word is keyboard-focused (focus and hover would fight).
+        if (document.activeElement !== word) hide();
+      });
     } else {
       word.addEventListener('click', (e) => {
         e.stopPropagation();
