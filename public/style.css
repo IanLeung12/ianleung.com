@@ -234,6 +234,7 @@ canvas {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  min-height: 25rem;
   --rx: 0deg;
   --ry: 0deg;
   --mx: 50%;
@@ -290,12 +291,14 @@ canvas {
 .project-thumb {
   position: relative;
   overflow: hidden;
+  flex: 1;
+  min-height: 0;
 }
 
 .project-thumb img {
   display: block;
   width: 100%;
-  aspect-ratio: 3 / 2;
+  height: 100%;
   object-fit: cover;
   object-position: center top;
   transform: scale(var(--img-scale, 1))
@@ -335,7 +338,6 @@ canvas {
 .project-body {
   display: flex;
   flex-direction: column;
-  flex: 1;
   padding: var(--space-4);
 }
 

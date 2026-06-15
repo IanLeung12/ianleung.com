@@ -26,6 +26,7 @@ function openModal(project: Project) {
   modalBody.innerHTML = `
     <h2>${project.title}</h2>
     <p>${project.description}</p>
+    <div class="tools">${renderTools(project.tools)}</div>
     ${project.image ? `<img src="${project.image}" alt="${project.title}" />` : ""}
   `;
   modal.classList.remove("hidden");
@@ -44,7 +45,6 @@ grid.innerHTML = typedProjects
       </div>
       <div class="project-body">
         <p>${p.short_desc}</p>
-        <div class="tools">${renderTools(p.tools)}</div>
         <div class="actions">
           ${p.link ? `<a class="action-primary" href="${p.link}" target="_blank" rel="noopener">${EXT_ICON}Live</a>` : ""}
           ${p.github ? `<a href="${p.github}" target="_blank" rel="noopener">${GH_ICON}GitHub</a>` : ""}
