@@ -436,6 +436,7 @@ canvas {
 .reveal:focus-visible {
   color: var(--fg);
   border-color: var(--fg);
+  -webkit-text-stroke: 0.4px currentColor;
   outline: none;
 }
 
