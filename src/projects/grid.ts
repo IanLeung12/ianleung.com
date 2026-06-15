@@ -24,10 +24,18 @@ function renderTools(tools: string[]) {
 
 function openModal(project: Project) {
   modalBody.innerHTML = `
-    <h2>${project.title}</h2>
-    <p>${project.description}</p>
-    <div class="tools">${renderTools(project.tools)}</div>
-    ${project.image ? `<img src="${project.image}" alt="${project.title}" />` : ""}
+    <div class="modal-hero">
+      ${project.image ? `<img src="${project.image}" alt="${project.title}" />` : ""}
+      <h2>${project.title}</h2>
+    </div>
+    <div class="modal-detail">
+      <p>${project.description}</p>
+      <div class="tools">${renderTools(project.tools)}</div>
+      <div class="actions">
+        ${project.link ? `<a class="action-primary" href="${project.link}" target="_blank" rel="noopener">${EXT_ICON}Live</a>` : ""}
+        ${project.github ? `<a href="${project.github}" target="_blank" rel="noopener">${GH_ICON}GitHub</a>` : ""}
+      </div>
+    </div>
   `;
   modal.classList.remove("hidden");
 }
