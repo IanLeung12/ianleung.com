@@ -28,14 +28,5 @@ export const projects: Project[] = [
         tools: ["Java", "Supabase", "PDFBox", "Gson", "FlatLaf", "Maven build"],
         thumbnail: "/images/peerassist.png",
         image: "/images/peerassist2.png",
-    },
-    {
-        title: "temp",
-        short_desc: "will add more later",
-        description: "hi",
-        github: "https://github.com/IanLeung12/IanLeung12",
-        tools: ["a"],
-        thumbnail: "",
-        image: "",
     }
 ]
