@@ -80,11 +80,17 @@ grid.querySelectorAll(".project-card").forEach((card, i) => {
     const rect = el.getBoundingClientRect();
     const x = (lastEvent.clientX - rect.left) / rect.width;
     const y = (lastEvent.clientY - rect.top) / rect.height;
+    const nx = x - 0.5;
+    const ny = y - 0.5;
 
-    el.style.setProperty("--rx", `${(-(y - 0.5) * maxTilt).toFixed(2)}deg`);
-    el.style.setProperty("--ry", `${((x - 0.5) * maxTilt).toFixed(2)}deg`);
+    el.style.setProperty("--rx", `${(-ny * maxTilt).toFixed(2)}deg`);
+    el.style.setProperty("--ry", `${(nx * maxTilt).toFixed(2)}deg`);
     el.style.setProperty("--mx", `${(x * 100).toFixed(1)}%`);
     el.style.setProperty("--my", `${(y * 100).toFixed(1)}%`);
+
+    // Parallax: the image drifts opposite the cursor for a sense of depth.
+    el.style.setProperty("--img-x", `${(-nx * 8).toFixed(1)}px`);
+    el.style.setProperty("--img-y", `${(-ny * 8).toFixed(1)}px`);
   };
 
   el.addEventListener("pointermove", (e: PointerEvent) => {
@@ -102,6 +108,8 @@ grid.querySelectorAll(".project-card").forEach((card, i) => {
     el.style.setProperty("--ry", "0deg");
     el.style.setProperty("--mx", "50%");
     el.style.setProperty("--my", "50%");
+    el.style.setProperty("--img-x", "0px");
+    el.style.setProperty("--img-y", "0px");
   });
 });
 

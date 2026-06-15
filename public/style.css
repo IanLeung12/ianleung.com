@@ -298,12 +298,14 @@ canvas {
   aspect-ratio: 3 / 2;
   object-fit: cover;
   object-position: center top;
-  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  transform: scale(var(--img-scale, 1))
+    translate3d(var(--img-x, 0px), var(--img-y, 0px), 0);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .project-card:hover .project-thumb img,
 .project-card:focus-visible .project-thumb img {
-  transform: scale(1.05);
+  --img-scale: 1.06;
 }
 
 .project-thumb::after {
