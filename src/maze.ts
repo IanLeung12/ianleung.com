@@ -21,16 +21,54 @@ const DIRS: [number, number][] = [[0, -1], [1, 0], [0, 1], [-1, 0]];
 const NEIGHBOR_OFFSET = DIRS.map(([dx, dy]) => dy * cols + dx);
 
 // ---------- Colors ----------
-const COLOR = {
-    wall: "rgb(190, 190, 190)",
-    cell: "#f5f4f0",
-    walk: "#fdfca1",
-    current: "#95ff95",
-    visited: "#f5e3cf",
-    pathEnd: "#c5f8c5",
-    pathDfs: "#fdcdcd",
-    pathAstar: "#c5eef8",
-} as const;
+type Palette = {
+    wall: string;
+    cell: string;
+    walk: string;
+    current: string;
+    visited: string;
+    pathEnd: string;
+    pathDfs: string;
+    pathAstar: string;
+};
+
+// Light keeps the original character but softened to paler tints so the
+// home title/nav stay legible where the path crosses under them.
+const LIGHT: Palette = {
+    wall: "rgb(196, 196, 196)",
+    cell: "#f6f5f1",
+    walk: "#f0eccb",
+    current: "#cfeccf",
+    visited: "#f2ebde",
+    pathEnd: "#d9f0d9",
+    pathDfs: "#f3dcdc",
+    pathAstar: "#dcebf4",
+};
+
+// Dark is monochrome, kept in the darker range so the cream text always
+// dominates (no light "path" colour creeping up near the title).
+const DARK: Palette = {
+    wall: "#3c372e",
+    cell: "#1e1c17",
+    walk: "#5d5950",
+    current: "#827c70",
+    visited: "#29261f",
+    pathEnd: "#7c766a",
+    pathDfs: "#6f6a5f",
+    pathAstar: "#6f6a5f",
+};
+
+function paletteForTheme(): Palette {
+    return document.documentElement.dataset.theme === "dark" ? DARK : LIGHT;
+}
+
+// `let`, not `const`: the render loop reads COLOR every frame, so reassigning
+// it on a theme change swaps the maze instantly.
+let COLOR: Palette = paletteForTheme();
+
+window.addEventListener("themechange", () => {
+    COLOR = paletteForTheme();
+});
 
 // ---------- Maze state ----------
 const maze = new Int16Array(cols * rows).fill(-1);
