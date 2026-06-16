@@ -11,9 +11,28 @@
       href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Gabarito:wght@400..900&display=swap"
       rel="stylesheet"
     />
+    <script>
+      (function () {
+        try {
+          var s = localStorage.getItem("theme");
+          var t =
+            s ||
+            (window.matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light");
+          document.documentElement.dataset.theme = t;
+        } catch (e) {
+          document.documentElement.dataset.theme = "light";
+        }
+      })();
+    </script>
     <link rel="stylesheet" href="/style.css" />
   </head>
   <body>
+    <button class="theme-toggle" type="button" aria-label="Toggle dark mode" title="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8l1.8-1.8M18 6l1.8-1.8"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.4 6.4 0 0 0 10.5 10.5z"/></svg>
+    </button>
     <header class="site-header">
       <nav class="site-nav">
         <a href="/" class="nav-btn">&lt; back</a>
@@ -31,5 +50,6 @@
         <a href="https://x.com/ianl_012/" target="_blank" rel="noreferrer">X</a>
       </div>
     </main>
+    <script type="module" src="/theme.ts"></script>
   </body>
 </html>
