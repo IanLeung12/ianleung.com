@@ -2,12 +2,17 @@
  * Design tokens
  * ---------------------------------- */
 :root {
-  --bg: #ffffff;
-  --fg: #141414;
-  --muted: #6b6b6b;
-  --border: #e6e6e6;
-  --surface: #f5f5f5;
-  --accent: #141414;
+  /* Warm Ink — light (default) */
+  --bg: #faf9f6;
+  --fg: #1a1916;
+  --muted: #736e64;
+  --border: #e4e1d9;
+  --border-strong: #d8d4c9;
+  --surface: #f0eee8;
+  --accent: #1a1916;
+  --accent-fg: #faf9f6;
+  --accent-strong: #000000;
+  --sheen: rgba(255, 255, 255, 0.28);
 
   --text-sm: 0.875rem;
   --text-base: 1rem;
@@ -29,8 +34,25 @@
   --radius: 10px;
   --radius-lg: 14px;
 
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 2px 4px rgba(0, 0, 0, 0.06), 0 16px 40px rgba(0, 0, 0, 0.1);
+  --shadow: 0 1px 2px rgba(40, 34, 24, 0.05), 0 8px 24px rgba(40, 34, 24, 0.07);
+  --shadow-lg: 0 2px 4px rgba(40, 34, 24, 0.07), 0 16px 40px rgba(40, 34, 24, 0.12);
+}
+
+:root[data-theme="dark"] {
+  /* Warm Ink — dark */
+  --bg: #161512;
+  --fg: #f4f2eb;
+  --muted: #9b958a;
+  --border: #2d2a24;
+  --border-strong: #3a352d;
+  --surface: #201e19;
+  --accent: #f4f2eb;
+  --accent-fg: #161512;
+  --accent-strong: #ffffff;
+  --sheen: rgba(255, 255, 255, 0.06);
+
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 30px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.5), 0 20px 48px rgba(0, 0, 0, 0.6);
 }
 
 /* ----------------------------------
@@ -53,6 +75,15 @@ body {
   color: var(--fg);
   font-size: var(--text-base);
   line-height: 1.6;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    transition: background-color 0.35s ease;
+  }
+  body {
+    transition: color 0.35s ease;
+  }
 }
 
 h1,
