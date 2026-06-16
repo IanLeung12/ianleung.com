@@ -121,12 +121,25 @@ grid.querySelectorAll(".project-card").forEach((card, i) => {
   });
 });
 
+function closeModal() {
+  // Skip the exit animation when the user prefers reduced motion.
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    modal.classList.add("hidden");
+    return;
+  }
+  modal.classList.add("closing");
+  window.setTimeout(() => {
+    modal.classList.add("hidden");
+    modal.classList.remove("closing");
+  }, 200);
+}
+
 modal.addEventListener("click", (e: MouseEvent) => {
   if (e.target === modal || (e.target as HTMLElement).classList.contains("modal-close")) {
-    modal.classList.add("hidden");
+    closeModal();
   }
 });
 
 document.addEventListener("keydown", (e: KeyboardEvent) => {
-  if (e.key === "Escape") modal.classList.add("hidden");
+  if (e.key === "Escape" && !modal.classList.contains("hidden")) closeModal();
 });

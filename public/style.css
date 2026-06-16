@@ -511,6 +511,7 @@ canvas {
 .modal-hero {
   position: relative;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .modal-hero img {
@@ -519,6 +520,7 @@ canvas {
   aspect-ratio: 16 / 9;
   object-fit: cover;
   object-position: center top;
+  animation: modal-hero-zoom 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .modal-hero::after {
@@ -543,6 +545,7 @@ canvas {
   color: #fff;
   font-size: var(--text-2xl);
   text-shadow: 0 1px 12px rgba(0, 0, 0, 0.5);
+  animation: modal-rise 0.5s 0.12s both cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .modal-detail {
@@ -560,6 +563,21 @@ canvas {
 
 .modal-detail .tools {
   margin-bottom: 0;
+}
+
+/* Content rises in sequence after the panel pops */
+.modal-detail > * {
+  animation: modal-rise 0.5s both cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.modal-detail > *:nth-child(1) {
+  animation-delay: 0.18s;
+}
+.modal-detail > *:nth-child(2) {
+  animation-delay: 0.26s;
+}
+.modal-detail > *:nth-child(3) {
+  animation-delay: 0.34s;
 }
 
 .modal-close {
@@ -587,6 +605,16 @@ canvas {
   transform: scale(1.05);
 }
 
+/* Graceful exit — dedicated keyframes so the animation reliably replays
+   (reusing the open animation names with `reverse` won't re-trigger). */
+.modal.closing {
+  animation: modal-fade-out 0.18s ease forwards;
+}
+
+.modal.closing .modal-content {
+  animation: modal-pop-out 0.18s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
 @keyframes modal-fade {
   from {
     opacity: 0;
@@ -607,9 +635,54 @@ canvas {
   }
 }
 
+@keyframes modal-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes modal-hero-zoom {
+  from {
+    transform: scale(1.08);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes modal-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes modal-pop-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .modal,
-  .modal-content {
+  .modal.closing,
+  .modal-content,
+  .modal.closing .modal-content,
+  .modal-hero img,
+  .modal-hero h2,
+  .modal-detail > * {
     animation: none;
   }
 }
