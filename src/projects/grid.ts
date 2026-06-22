@@ -16,7 +16,6 @@ const typedProjects = projects as Project[];
 const grid = document.getElementById("projects-grid") as HTMLElement;
 const modal = document.getElementById("project-modal") as HTMLElement;
 const modalBody = document.getElementById("modal-body") as HTMLElement;
-const modalClose = modal.querySelector(".modal-close") as HTMLButtonElement;
 
 function renderTools(tools: string[]) {
   return tools.map((t) => `<span class="tool">${t}</span>`).join("");

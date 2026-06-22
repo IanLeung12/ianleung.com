@@ -40,8 +40,8 @@ export class HeapQueue<T> {
         const length = this.heap.length;
 
         while (true) {
-            let left = index * 2 + 1
-            let right = left + 1;
+            const left = index * 2 + 1
+            const right = left + 1;
             let smallest = index;
 
             if (left < length && this.heap[left].priority < this.heap[smallest].priority) {
