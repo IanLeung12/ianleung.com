@@ -30,23 +30,58 @@ function init(): void {
   const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
   let activeWord: HTMLElement | null = null;
-  let currentSrc = '';
+  let currentSrc = ''; // src currently committed to the on-DOM img
+  let loadToken = 0; // monotonic; only the latest request may commit
   let lastX = 0;
   let lastY = 0;
   let rafId = 0;
 
-  function loadFrom(word: HTMLElement): boolean {
-    const src = word.dataset.img;
-    if (!src) return false;
-    if (src !== currentSrc) {
-      img.src = src;
-      currentSrc = src;
-    }
+  function applyCaption(word: HTMLElement): void {
     const cap = word.dataset.caption ?? '';
     caption.textContent = cap;
     caption.style.display = cap ? '' : 'none';
     img.alt = cap || 'preview image';
-    return true;
+  }
+
+  // Swap the popover's image+caption atomically. The new image is decoded
+  // off-DOM first, so the on-DOM img keeps showing the previous (already
+  // decoded) frame until the replacement is ready — no stale-caption-over-old-
+  // image flash, and no zero-height collapse. Rapid switches bump loadToken so
+  // a slow load that resolves late can't overwrite a newer one.
+  function loadFrom(word: HTMLElement): void {
+    const src = word.dataset.img;
+    if (!src) return;
+    if (src === currentSrc) {
+      applyCaption(word);
+      reposition();
+      return;
+    }
+
+    const myToken = ++loadToken;
+    const pre = new Image();
+    pre.decoding = 'async';
+    pre.src = src;
+
+    const commit = (): void => {
+      if (myToken !== loadToken || activeWord !== word) return; // superseded / hidden
+      img.src = src;
+      currentSrc = src;
+      applyCaption(word);
+      reposition(); // popover height changed with the new image
+    };
+
+    if (typeof pre.decode === 'function') {
+      pre.decode().then(commit).catch(() => {
+        if (pre.complete && pre.naturalWidth > 0) commit();
+        else {
+          pre.addEventListener('load', commit, { once: true });
+          pre.addEventListener('error', () => {}, { once: true }); // keep old image on failure
+        }
+      });
+    } else {
+      pre.addEventListener('load', commit, { once: true });
+      pre.addEventListener('error', () => {}, { once: true });
+    }
   }
 
   function positionAtPoint(x: number, y: number): void {
@@ -91,18 +126,17 @@ function init(): void {
   }
 
   function show(word: HTMLElement): void {
-    if (!loadFrom(word)) return;
+    if (!word.dataset.img) return;
     activeWord = word;
-    popover.classList.add('visible');
+    popover.classList.add('visible'); // frame appears immediately; content swaps on decode
+    loadFrom(word);
   }
 
   function hide(): void {
     activeWord = null;
+    loadToken++; // invalidate any in-flight load so it can't commit after we hide
     popover.classList.remove('visible');
   }
-
-  // A late-loading image changes the popover's height; re-anchor when it does.
-  img.addEventListener('load', reposition);
 
   function onPointerMove(e: PointerEvent): void {
     if (!activeWord) return;
