@@ -5,32 +5,462 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Ian Leung's resume." />
     <title>Resume | Ian Leung</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600&family=Gabarito:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
+      :root {
+        --bg: #f4f3ef;
+        --panel: #ffffff;
+        --fg: #1a1916;
+        --muted: #736e64;
+        --border: #e4e1d9;
+        --border-strong: #d2cec3;
+        --ring: #1a1916;
+        --sidebar-w: 212px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
       html,
       body {
         margin: 0;
         width: 100%;
         height: 100%;
+        background: var(--bg);
+        font-family: "Fira Sans", system-ui, sans-serif;
+        color: var(--fg);
         overflow: hidden;
-        background: #ffffff;
       }
 
-      body {
+      .viewer {
+        display: flex;
         width: 100%;
         height: 100%;
       }
 
-      iframe {
+      /* ---------- Sidebar ---------- */
+      .sidebar {
+        flex: 0 0 var(--sidebar-w);
+        width: var(--sidebar-w);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+        padding: 18px 16px;
+        background: var(--panel);
+        border-right: 1px solid var(--border);
+        overflow-y: auto;
+      }
+
+      body.collapsed .sidebar {
+        display: none;
+      }
+
+      .sidebar-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .sidebar-head .brand {
+        font-family: "Gabarito", sans-serif;
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--fg);
+        text-decoration: none;
+      }
+
+      .icon-btn {
+        width: 30px;
+        height: 30px;
+        display: grid;
+        place-items: center;
+        padding: 0;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--panel);
+        color: var(--muted);
+        cursor: pointer;
+        transition: border-color 0.18s ease, color 0.18s ease,
+          background 0.18s ease;
+      }
+
+      .icon-btn:hover {
+        border-color: var(--border-strong);
+        color: var(--fg);
+      }
+
+      .icon-btn svg {
+        width: 16px;
+        height: 16px;
+      }
+
+      .group {
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+      }
+
+      .group > .label {
+        font-size: 0.66rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--muted);
+      }
+
+      /* ---------- Version (radio list) ---------- */
+      .versions {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .version-opt {
+        text-align: left;
+        padding: 8px 11px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: var(--panel);
+        color: var(--fg);
+        font: inherit;
+        font-size: 0.86rem;
+        cursor: pointer;
+        transition: border-color 0.18s ease, background 0.18s ease;
+      }
+
+      .version-opt:hover {
+        border-color: var(--border-strong);
+      }
+
+      .version-opt[aria-checked="true"] {
+        background: var(--fg);
+        color: var(--bg);
+        border-color: var(--fg);
+      }
+
+      /* ---------- Colors (swatches) ---------- */
+      .swatches {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 2px;
+      }
+
+      .swatch {
+        width: 28px;
+        height: 28px;
+        padding: 0;
+        border: none;
+        border-radius: 999px;
+        cursor: pointer;
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.18);
+        transition: transform 0.16s ease, box-shadow 0.16s ease;
+      }
+
+      .swatch:hover {
+        transform: scale(1.08);
+      }
+
+      .swatch[aria-pressed="true"] {
+        box-shadow: 0 0 0 2px var(--panel), 0 0 0 4px var(--ring);
+      }
+
+      .swatch-name {
+        font-size: 0.78rem;
+        color: var(--muted);
+      }
+
+      /* ---------- Download + caption ---------- */
+      .foot {
+        margin-top: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .download {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 9px 12px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: var(--panel);
+        color: var(--fg);
+        font-size: 0.84rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: background 0.18s ease, color 0.18s ease,
+          border-color 0.18s ease;
+      }
+
+      .download:hover {
+        background: var(--fg);
+        color: var(--bg);
+        border-color: var(--fg);
+      }
+
+      .download svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      .caption {
+        font-size: 0.7rem;
+        color: var(--muted);
+        line-height: 1.4;
+      }
+
+      /* ---------- Reopen button (when collapsed) ---------- */
+      .reopen {
+        display: none;
         position: fixed;
-        inset: 0;
-        width: 100%;
+        top: 14px;
+        left: 14px;
+        z-index: 20;
+        width: 38px;
+        height: 38px;
+        place-items: center;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: var(--panel);
+        color: var(--fg);
+        cursor: pointer;
+        box-shadow: 0 2px 10px rgba(40, 34, 24, 0.12);
+      }
+
+      .reopen svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      body.collapsed .reopen {
+        display: grid;
+      }
+
+      /* ---------- PDF frame ---------- */
+      .frame {
+        flex: 1;
+        min-width: 0;
         height: 100%;
         border: 0;
         background: #fff;
       }
+
+      @media (prefers-reduced-motion: reduce) {
+        .icon-btn,
+        .version-opt,
+        .swatch,
+        .download {
+          transition: none;
+        }
+      }
     </style>
   </head>
   <body>
-    <iframe src="/resume/cv.pdf" title="Ian Leung resume"></iframe>
+    <div class="viewer">
+      <aside class="sidebar" aria-label="Resume options">
+        <div class="sidebar-head">
+          <a class="brand" href="/" title="Back to ianleung.com">Ian Leung</a>
+          <button
+            class="icon-btn"
+            type="button"
+            id="collapse"
+            aria-label="Hide panel"
+            title="Hide panel"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M15 6l-6 6 6 6" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="group">
+          <span class="label" id="version-label">Version</span>
+          <div class="versions" role="radiogroup" aria-labelledby="version-label" id="versions"></div>
+        </div>
+
+        <div class="group">
+          <span class="label">Color</span>
+          <div class="swatches" id="swatches"></div>
+          <span class="swatch-name" id="swatch-name"></span>
+        </div>
+
+        <div class="foot">
+          <a class="download" id="download" download="Ian-Leung-Resume.pdf" href="#">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" />
+            </svg>
+            Download
+          </a>
+          <span class="caption" id="caption"></span>
+        </div>
+      </aside>
+
+      <button class="reopen" type="button" id="reopen" aria-label="Show panel" title="Show panel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
+      <iframe class="frame" id="frame" title="Ian Leung resume"></iframe>
+    </div>
+
+    <script>
+      (function () {
+        "use strict";
+
+        var BASE = "/resume/";
+        var FALLBACK_PDF = BASE + "cv.pdf";
+        var LS = { version: "resume.version", theme: "resume.theme", sidebar: "resume.sidebar" };
+
+        var els = {
+          body: document.body,
+          versions: document.getElementById("versions"),
+          versionGroup: document.getElementById("version-label").parentElement,
+          swatches: document.getElementById("swatches"),
+          swatchName: document.getElementById("swatch-name"),
+          download: document.getElementById("download"),
+          caption: document.getElementById("caption"),
+          frame: document.getElementById("frame"),
+          collapse: document.getElementById("collapse"),
+          reopen: document.getElementById("reopen"),
+        };
+
+        function store(key, val) {
+          try { localStorage.setItem(key, val); } catch (e) { /* storage off */ }
+        }
+        function recall(key) {
+          try { return localStorage.getItem(key); } catch (e) { return null; }
+        }
+
+        // ---- Collapse / reopen ----
+        function setCollapsed(collapsed) {
+          els.body.classList.toggle("collapsed", collapsed);
+          store(LS.sidebar, collapsed ? "collapsed" : "open");
+        }
+        els.collapse.addEventListener("click", function () { setCollapsed(true); });
+        els.reopen.addEventListener("click", function () { setCollapsed(false); });
+
+        var sidebarPref = recall(LS.sidebar);
+        if (sidebarPref === "collapsed") setCollapsed(true);
+        else if (!sidebarPref && window.matchMedia("(max-width: 700px)").matches) setCollapsed(true);
+
+        // ---- Fallback when the manifest can't be loaded ----
+        function fallback() {
+          els.frame.src = FALLBACK_PDF;
+          els.body.classList.add("collapsed"); // hide controls, just show the PDF
+          els.reopen.style.display = "none";
+        }
+
+        fetch(BASE + "manifest.json", { cache: "no-cache" })
+          .then(function (r) {
+            if (!r.ok) throw new Error("manifest " + r.status);
+            return r.json();
+          })
+          .then(init)
+          .catch(fallback);
+
+        function init(manifest) {
+          var versions = manifest.versions || [];
+          var themes = manifest.themes || [];
+          var pattern = manifest.pattern || "cv-{version}-{theme}.pdf";
+          if (!versions.length || !themes.length) return fallback();
+
+          var has = function (list, id) {
+            for (var i = 0; i < list.length; i++) if (list[i].id === id) return true;
+            return false;
+          };
+          var labelOf = function (list, id) {
+            for (var i = 0; i < list.length; i++) if (list[i].id === id) return list[i].label || id;
+            return id;
+          };
+
+          // Selection priority: URL query -> localStorage -> manifest default.
+          var params = new URLSearchParams(window.location.search);
+          var def = manifest.default || { version: versions[0].id, theme: themes[0].id };
+
+          var version = params.get("v") || recall(LS.version) || def.version;
+          var theme = params.get("t") || recall(LS.theme) || def.theme;
+          if (!has(versions, version)) version = def.version;
+          if (!has(themes, theme)) theme = def.theme;
+
+          var state = { version: version, theme: theme };
+
+          function fileUrl() {
+            return BASE + pattern.replace("{version}", state.version).replace("{theme}", state.theme);
+          }
+
+          function render() {
+            // active states
+            Array.prototype.forEach.call(els.versions.children, function (b) {
+              b.setAttribute("aria-checked", String(b.dataset.id === state.version));
+            });
+            Array.prototype.forEach.call(els.swatches.children, function (b) {
+              b.setAttribute("aria-pressed", String(b.dataset.id === state.theme));
+            });
+            els.swatchName.textContent = labelOf(themes, state.theme);
+
+            var url = fileUrl();
+            els.frame.src = url;
+            els.download.href = url;
+            els.caption.textContent =
+              "Viewing " + labelOf(versions, state.version) + " · " + labelOf(themes, state.theme);
+
+            store(LS.version, state.version);
+            store(LS.theme, state.theme);
+
+            // Keep the URL shareable/deep-linkable without adding history entries.
+            var qs = "?v=" + encodeURIComponent(state.version) + "&t=" + encodeURIComponent(state.theme);
+            history.replaceState(null, "", window.location.pathname + qs);
+          }
+
+          // Build version radios
+          versions.forEach(function (v) {
+            var b = document.createElement("button");
+            b.type = "button";
+            b.className = "version-opt";
+            b.setAttribute("role", "radio");
+            b.dataset.id = v.id;
+            b.textContent = v.label || v.id;
+            b.addEventListener("click", function () {
+              if (state.version === v.id) return;
+              state.version = v.id;
+              render();
+            });
+            els.versions.appendChild(b);
+          });
+
+          // Build color swatches
+          themes.forEach(function (t) {
+            var b = document.createElement("button");
+            b.type = "button";
+            b.className = "swatch";
+            b.dataset.id = t.id;
+            b.style.background = t.swatch || "#000";
+            b.setAttribute("aria-label", t.label || t.id);
+            b.title = t.label || t.id;
+            b.addEventListener("click", function () {
+              if (state.theme === t.id) return;
+              state.theme = t.id;
+              render();
+            });
+            els.swatches.appendChild(b);
+          });
+
+          render();
+        }
+      })();
+    </script>
   </body>
 </html>
