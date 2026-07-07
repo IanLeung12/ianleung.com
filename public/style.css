@@ -243,13 +243,14 @@ canvas {
 }
 
 .about-page a {
+  color: color-mix(in srgb, var(--fg) 55%, var(--muted) 45%);
   text-decoration: underline;
+  text-decoration-thickness: 0.5px;
   text-underline-offset: 3px;
 }
 
 .about-page a:hover {
-  text-decoration: underline;
-  text-underline-offset: 3px;
+  color: var(--fg);
 }
 
 /* ----------------------------------
