@@ -2,7 +2,8 @@
   "default": { "version": "general", "theme": "blue" },
   "pattern": "cv-{version}-{theme}.pdf",
   "versions": [
-    { "id": "general", "label": "General" }
+    { "id": "general", "label": "General" },
+    { "id": "quant", "label": "quant" }
   ],
   "themes": [
     { "id": "blue", "label": "Blue", "swatch": "#26338c" },
