@@ -242,6 +242,16 @@ canvas {
   margin-top: var(--space-1);
 }
 
+.about-page a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.about-page a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 /* ----------------------------------
  * Projects page
  * ---------------------------------- */
