@@ -1,4 +1,4 @@
-import { projects } from "../data/projects";
+﻿import { projects } from "../data/projects";
 
 interface Project {
   title: string;
@@ -47,44 +47,7 @@ grid.querySelectorAll(".project-entry").forEach((el, i) => {
   });
 });
 
-function setupModalTilt(modalContent: HTMLElement) {
-  let rafId = 0;
-  let lastEvent: PointerEvent | null = null;
-
-  function updateFromEvent() {
-    if (!lastEvent) return;
-    const rect = modalContent.getBoundingClientRect();
-    const x = (lastEvent.clientX - rect.left) / rect.width;
-    const y = (lastEvent.clientY - rect.top) / rect.height;
-    const nx = x - 0.5;
-    const ny = y - 0.5;
-    modalContent.style.transform = `perspective(1000px) rotateX(${(-ny * 8).toFixed(2)}deg) rotateY(${(nx * 8).toFixed(2)}deg)`;
-  }
-
-  function onMove(e: PointerEvent) {
-    lastEvent = e;
-    if (rafId) return;
-    rafId = requestAnimationFrame(() => {
-      rafId = 0;
-      updateFromEvent();
-    });
-  }
-
-  function onLeave() {
-    lastEvent = null;
-    modalContent.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg)";
-  }
-
-  modalContent.addEventListener("pointermove", onMove);
-  modalContent.addEventListener("pointerleave", onLeave);
-
-  (modalContent as any)._tiltCleanup = () => {
-    modalContent.removeEventListener("pointermove", onMove);
-    modalContent.removeEventListener("pointerleave", onLeave);
-    cancelAnimationFrame(rafId);
-    modalContent.style.transform = "";
-  };
-}
+let currentTiltCleanup: (() => void) | null = null;
 
 function openModal(project: Project) {
   modalBody.innerHTML = `
@@ -101,16 +64,52 @@ function openModal(project: Project) {
       </div>
     </div>
   `;
+
   const content = document.querySelector(".modal-content") as HTMLElement;
-  setupModalTilt(content);
+  let rafId = 0;
+  let lastEvent: PointerEvent | null = null;
+
+  function updateFromEvent() {
+    if (!lastEvent) return;
+    const rect = content.getBoundingClientRect();
+    const x = (lastEvent.clientX - rect.left) / rect.width;
+    const y = (lastEvent.clientY - rect.top) / rect.height;
+    const nx = x - 0.5;
+    const ny = y - 0.5;
+    content.style.transform = `perspective(1000px) rotateX(${(-ny * 8).toFixed(2)}deg) rotateY(${(nx * 8).toFixed(2)}deg)`;
+  }
+
+  function onMove(e: PointerEvent) {
+    lastEvent = e;
+    if (rafId) return;
+    rafId = requestAnimationFrame(() => {
+      rafId = 0;
+      updateFromEvent();
+    });
+  }
+
+  function onLeave() {
+    lastEvent = null;
+    content.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg)";
+  }
+
+  content.addEventListener("pointermove", onMove);
+  content.addEventListener("pointerleave", onLeave);
+
+  currentTiltCleanup = () => {
+    content.removeEventListener("pointermove", onMove);
+    content.removeEventListener("pointerleave", onLeave);
+    cancelAnimationFrame(rafId);
+    content.style.transform = "";
+  };
+
   modal.classList.remove("hidden");
 }
 
 function closeModal() {
-  const content = document.querySelector(".modal-content") as HTMLElement;
-  if ((content as any)._tiltCleanup) {
-    (content as any)._tiltCleanup();
-    (content as any)._tiltCleanup = null;
+  if (currentTiltCleanup) {
+    currentTiltCleanup();
+    currentTiltCleanup = null;
   }
 
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
