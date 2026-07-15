@@ -272,19 +272,33 @@ canvas {
 
 .project-entry {
   position: relative;
-  padding: var(--space-6) 0 var(--space-6) var(--space-6);
+  padding: var(--space-6) 0;
   border-bottom: 1px solid var(--border);
-  border-left: 1px solid var(--border);
-  cursor: pointer;
-  transition: background 0.2s ease;
 }
 
 .project-entry:last-child {
   border-bottom: none;
 }
 
-.project-entry:hover {
-  background: var(--surface);
+.project-entry::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, var(--border) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.project-entry:hover::before {
+  opacity: 0.25;
+}
+
+.project-entry:hover h3 {
+  text-decoration: underline;
 }
 
 .project-entry:focus-visible {
@@ -299,6 +313,7 @@ canvas {
   margin: 0 0 var(--space-1);
   color: var(--fg);
   line-height: 1.2;
+  cursor: pointer;
 }
 
 .project-entry p {
@@ -309,13 +324,16 @@ canvas {
 }
 
 @media (hover: none) {
-  .project-entry:hover {
-    background: transparent;
+  .project-entry::before {
+    display: none;
+  }
+  .project-entry:hover h3 {
+    text-decoration: none;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .project-entry {
+  .project-entry::before {
     transition: none;
   }
 }
@@ -539,67 +557,8 @@ canvas {
   .modal-hero h2,
   .modal-detail > * {
     animation: none;
-  }
 }
 
-/* Modal 3D tilt */
-.modal-tilt {
-  --rx: 0deg;
-  --ry: 0deg;
-  --mx: 50%;
-  --my: 50%;
-  transform-style: preserve-3d;
-  will-change: transform;
-  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.3s ease;
-}
-
-.modal-tilt:hover {
-  transform: rotateX(var(--rx)) rotateY(var(--ry));
-  box-shadow: var(--shadow-lg);
-}
-
-.modal-tilt::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 4;
-  border-radius: inherit;
-  background: radial-gradient(
-    180px circle at var(--mx) var(--my),
-    var(--sheen),
-    transparent 60%
-  );
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-}
-
-.modal-tilt:hover::before {
-  opacity: 0.32;
-}
-
-@media (hover: none) {
-  .modal-tilt:hover {
-    transform: none;
-  }
-  .modal-tilt::before {
-    display: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .modal-tilt,
-  .modal-tilt::before {
-    transition: none;
-  }
-  .modal-tilt:hover {
-    transform: none;
-  }
-  .modal-tilt::before {
-    display: none;
-  }
-}
 
 /* ----------------------------------
  * Contact page

@@ -58,11 +58,7 @@ function setupModalTilt(modalContent: HTMLElement) {
     const y = (lastEvent.clientY - rect.top) / rect.height;
     const nx = x - 0.5;
     const ny = y - 0.5;
-
-    modalContent.style.setProperty("--rx", `${(-ny * 8).toFixed(2)}deg`);
-    modalContent.style.setProperty("--ry", `${(nx * 8).toFixed(2)}deg`);
-    modalContent.style.setProperty("--mx", `${(x * 100).toFixed(1)}%`);
-    modalContent.style.setProperty("--my", `${(y * 100).toFixed(1)}%`);
+    modalContent.style.transform = `perspective(1000px) rotateX(${(-ny * 8).toFixed(2)}deg) rotateY(${(nx * 8).toFixed(2)}deg)`;
   }
 
   function onMove(e: PointerEvent) {
@@ -76,10 +72,7 @@ function setupModalTilt(modalContent: HTMLElement) {
 
   function onLeave() {
     lastEvent = null;
-    modalContent.style.setProperty("--rx", "0deg");
-    modalContent.style.setProperty("--ry", "0deg");
-    modalContent.style.setProperty("--mx", "50%");
-    modalContent.style.setProperty("--my", "50%");
+    modalContent.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg)";
   }
 
   modalContent.addEventListener("pointermove", onMove);
@@ -89,6 +82,7 @@ function setupModalTilt(modalContent: HTMLElement) {
     modalContent.removeEventListener("pointermove", onMove);
     modalContent.removeEventListener("pointerleave", onLeave);
     cancelAnimationFrame(rafId);
+    modalContent.style.transform = "";
   };
 }
 
@@ -108,7 +102,6 @@ function openModal(project: Project) {
     </div>
   `;
   const content = document.querySelector(".modal-content") as HTMLElement;
-  content.classList.add("modal-tilt");
   setupModalTilt(content);
   modal.classList.remove("hidden");
 }
@@ -119,7 +112,6 @@ function closeModal() {
     (content as any)._tiltCleanup();
     (content as any)._tiltCleanup = null;
   }
-  content.classList.remove("modal-tilt");
 
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     modal.classList.add("hidden");
