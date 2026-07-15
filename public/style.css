@@ -243,7 +243,7 @@ canvas {
 }
 
 .about-page a {
-  color: color-mix(in srgb, var(--fg) 55%, var(--muted) 45%);
+  color: color-mix(in srgb, var(--fg) 30%, var(--muted) 70%);
   text-decoration: underline;
   text-decoration-thickness: 0.5px;
   text-underline-offset: 3px;
