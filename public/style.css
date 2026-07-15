@@ -257,7 +257,7 @@ canvas {
  * Projects page
  * ---------------------------------- */
 .projects-page .wrap {
-  width: min(100%, 1020px);
+  width: min(100%, 720px);
   align-self: start;
   justify-self: center;
   padding-top: var(--space-16);
@@ -265,214 +265,58 @@ canvas {
 }
 
 .projects-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
-  gap: var(--space-6);
-  width: 100%;
-  perspective: 1000px;
-}
-
-.project-card {
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
-  --rx: 0deg;
-  --ry: 0deg;
-  --mx: 50%;
-  --my: 50%;
+  width: 100%;
+}
+
+.project-entry {
   position: relative;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
+  padding: var(--space-6) 0 var(--space-6) var(--space-6);
+  border-bottom: 1px solid var(--border);
+  border-left: 1px solid var(--border);
   cursor: pointer;
-  text-align: left;
-  box-shadow: var(--shadow);
-  transform-style: preserve-3d;
-  will-change: transform;
-  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.3s ease, border-color 0.3s ease;
+  transition: background 0.2s ease;
 }
 
-.project-card:hover,
-.project-card:focus-visible {
-  transform: rotateX(var(--rx)) rotateY(var(--ry)) translateY(-4px);
-  box-shadow: var(--shadow-lg);
-  border-color: var(--border-strong);
+.project-entry:last-child {
+  border-bottom: none;
 }
 
-.project-card:focus-visible {
-  outline: 2px solid var(--fg);
-  outline-offset: 3px;
-}
-
-/* Soft pointer-following sheen */
-.project-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 4;
-  border-radius: inherit;
-  background: radial-gradient(
-    180px circle at var(--mx) var(--my),
-    var(--sheen),
-    transparent 60%
-  );
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-}
-
-.project-card:hover::before,
-.project-card:focus-visible::before {
-  opacity: 0.32;
-}
-
-/* Hero image with overlaid title */
-.project-thumb {
-  position: relative;
-  overflow: hidden;
-}
-
-.project-thumb img {
-  display: block;
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-  object-position: center top;
-  transform: scale(var(--img-scale, 1))
-    translate3d(var(--img-x, 0px), var(--img-y, 0px), 0);
-  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.project-card:hover .project-thumb img,
-.project-card:focus-visible .project-thumb img {
-  --img-scale: 1.06;
-}
-
-.project-thumb::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to top,
-    rgba(0, 0, 0, 0.72),
-    rgba(0, 0, 0, 0.1) 50%,
-    transparent 72%
-  );
-}
-
-.project-thumb h3 {
-  position: absolute;
-  left: var(--space-4);
-  right: var(--space-4);
-  bottom: var(--space-3);
-  z-index: 2;
-  margin: 0;
-  color: #fff;
-  font-size: var(--text-lg);
-  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.45);
-}
-
-.project-body {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  padding: var(--space-4);
-}
-
-.project-card p {
-  margin: 0 0 var(--space-4);
-  color: var(--muted);
-  font-size: var(--text-sm);
-}
-
-.tools {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  margin-bottom: var(--space-4);
-}
-
-.tool {
-  display: inline-block;
-  padding: 3px var(--space-2);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
+.project-entry:hover {
   background: var(--surface);
-  color: var(--muted);
-  font-size: 0.72rem;
-  letter-spacing: 0.01em;
-  white-space: nowrap;
 }
 
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  margin-top: auto;
+.project-entry:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: -2px;
 }
 
-.actions a {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 14px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  font-size: var(--text-sm);
-  font-weight: 500;
+.project-entry h3 {
+  font-family: "Gabarito", sans-serif;
+  font-size: var(--text-xl);
+  font-weight: 600;
+  margin: 0 0 var(--space-1);
   color: var(--fg);
-  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  line-height: 1.2;
 }
 
-.actions a svg {
-  width: 13px;
-  height: 13px;
-  flex-shrink: 0;
-}
-
-.actions a:hover {
-  background: var(--fg);
-  color: var(--bg);
-  border-color: var(--fg);
-}
-
-.actions a.action-primary {
-  background: var(--accent);
-  color: var(--accent-fg);
-  border-color: var(--accent);
-}
-
-.actions a.action-primary:hover {
-  background: var(--accent-strong);
-  border-color: var(--accent-strong);
+.project-entry p {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--muted);
+  line-height: 1.5;
 }
 
 @media (hover: none) {
-  .project-card:hover {
-    transform: none;
-  }
-  .project-card::before {
-    display: none;
+  .project-entry:hover {
+    background: transparent;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .project-card,
-  .project-thumb img {
+  .project-entry {
     transition: none;
-  }
-  .project-card:hover,
-  .project-card:focus-visible {
-    transform: translateY(-4px);
-  }
-  .project-card:hover .project-thumb img,
-  .project-card:focus-visible .project-thumb img {
-    transform: none;
-  }
-  .project-card::before {
-    display: none;
   }
 }
 
@@ -695,6 +539,65 @@ canvas {
   .modal-hero h2,
   .modal-detail > * {
     animation: none;
+  }
+}
+
+/* Modal 3D tilt */
+.modal-tilt {
+  --rx: 0deg;
+  --ry: 0deg;
+  --mx: 50%;
+  --my: 50%;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s ease;
+}
+
+.modal-tilt:hover {
+  transform: rotateX(var(--rx)) rotateY(var(--ry));
+  box-shadow: var(--shadow-lg);
+}
+
+.modal-tilt::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  border-radius: inherit;
+  background: radial-gradient(
+    180px circle at var(--mx) var(--my),
+    var(--sheen),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.modal-tilt:hover::before {
+  opacity: 0.32;
+}
+
+@media (hover: none) {
+  .modal-tilt:hover {
+    transform: none;
+  }
+  .modal-tilt::before {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-tilt,
+  .modal-tilt::before {
+    transition: none;
+  }
+  .modal-tilt:hover {
+    transform: none;
+  }
+  .modal-tilt::before {
+    display: none;
   }
 }
 
