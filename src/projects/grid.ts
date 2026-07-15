@@ -75,7 +75,7 @@ function openModal(project: Project) {
     const y = (lastEvent.clientY - rect.top) / rect.height;
     const nx = x - 0.5;
     const ny = y - 0.5;
-    content.style.transform = `perspective(1000px) rotateX(${(-ny * 8).toFixed(2)}deg) rotateY(${(nx * 8).toFixed(2)}deg)`;
+    content.style.transform = `perspective(1000px) rotateX(${(-ny * 5).toFixed(2)}deg) rotateY(${(nx * 5).toFixed(2)}deg)`;
   }
 
   function onMove(e: PointerEvent) {
