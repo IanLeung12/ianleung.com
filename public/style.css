@@ -582,8 +582,8 @@ canvas {
   .modal-hero h2,
   .modal-detail > * {
     animation: none;
+  }
 }
-
 
 /* ----------------------------------
  * Contact page
