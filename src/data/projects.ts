@@ -28,5 +28,14 @@ export const projects: Project[] = [
         tools: ["Java", "Supabase", "PDFBox", "Gson", "FlatLaf", "Maven build"],
         thumbnail: "/images/peerassist.png",
         image: "/images/peerassist.gif",
+    },
+    {
+        title: "Zombie Outbreak",
+        short_desc: "Cellular Automata Simulation",
+        description: "Cellular Automata Simulation of a Zombie Outbreak, with tunable variables and visualization. Also has a nuke button.",
+        github: "https://github.com/IanLeung12/cheerville",
+        tools: ["Java"],
+        thumbnail: "/images/cheerville.gif",
+        image: "/images/cheerville.gif"
     }
 ]
