@@ -284,7 +284,7 @@ function draw() {
 // ---------- Scroll fade ----------
 // The maze belongs to the hero; fade it out quickly once the page scrolls.
 function updateScrollFade() {
-    const fade = Math.max(0, 1 - window.scrollY / (window.innerHeight * 0.35));
+    const fade = Math.max(0, 1 - window.scrollY / (window.innerHeight * 0.75));
     canvas.style.opacity = fade.toFixed(3);
 }
 window.addEventListener("scroll", updateScrollFade, { passive: true });
