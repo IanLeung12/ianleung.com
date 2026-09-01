@@ -18,7 +18,7 @@ export const projects: Project[] = [
         github: "https://github.com/IanLeung12/Trust-No-Ghost",
         tools: ["Unity", "C#", "Itch.io"],
         thumbnail: "/images/trustnoghost.png",
-        image: "/images/trustnoghost.png",
+        image: "/images/trustnoghost.gif",
     },
     {
         title: "PeerAssist",
@@ -27,6 +27,6 @@ export const projects: Project[] = [
         github: "https://github.com/IanLeung12/PeerAssist",
         tools: ["Java", "Supabase", "PDFBox", "Gson", "FlatLaf", "Maven build"],
         thumbnail: "/images/peerassist.png",
-        image: "/images/peerassist2.png",
+        image: "/images/peerassist.gif",
     }
 ]
