@@ -49,7 +49,12 @@ function updateCursorState() {
 export function punchHole(ctx: CanvasRenderingContext2D) {
     ctx.save();
     ctx.globalCompositeOperation = "destination-out";
-  const { x: cx, y: cy, radius } = updateCursorState();
+  const { x, y, radius } = updateCursorState();
+  // Cursor coords are viewport-relative; the canvas scrolls with the page,
+  // so map them into canvas space each frame.
+  const canvasRect = ctx.canvas.getBoundingClientRect();
+  const cx = x - canvasRect.left;
+  const cy = y - canvasRect.top;
   const now = performance.now();
   const dotSpacing = 10;
   const maxDotRadius = 4;
@@ -89,7 +94,7 @@ export function punchHole(ctx: CanvasRenderingContext2D) {
     if (age > trailMaxAgeMs) continue;
     const t = 1 - age / trailMaxAgeMs;
     const scale = trailMinRadiusScale + (trailMaxRadiusScale - trailMinRadiusScale) * t;
-    drawHalftone(p.x, p.y, radius * scale, t);
+    drawHalftone(p.x - canvasRect.left, p.y - canvasRect.top, radius * scale, t);
   }
 
   drawHalftone(cx, cy, radius, 1);
