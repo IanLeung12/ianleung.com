@@ -29,17 +29,78 @@
       <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8l1.8-1.8M18 6l1.8-1.8"/></svg>
       <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.4 6.4 0 0 0 10.5 10.5z"/></svg>
     </button>
-    <canvas id="maze"></canvas>
-    <main class="wrap">
-      <h1 class="title">hi im ian</h1>
 
-      <div class="content">
-        <a href="/about/" class="nav-btn">about</a>
-        <a href="/projects/" class="nav-btn">projects</a>
-        <a href="/contact/" class="nav-btn">contact</a>
+    <section class="hero">
+      <canvas id="maze"></canvas>
+      <div class="wrap">
+        <h1 class="title">hi im ian</h1>
+
+        <div class="content">
+          <a href="#about" class="nav-btn">about</a>
+          <a href="#projects" class="nav-btn">projects</a>
+          <a href="#contact" class="nav-btn">contact</a>
+        </div>
       </div>
+    </section>
+
+    <main>
+      <section id="about" class="about-section">
+        <h2 class="title">about me</h2>
+
+        <div class="content">
+          <ul>
+            <li>Studying cs + finance at the University of Waterloo
+            <li>Interested in all things problem solving</li>
+            <li>Open to Winter/Summer 2027 internships</li>
+            <li>
+              Experience
+              <ul>
+                <li>Software Engineering Intern at <span class="reveal" data-img="/images/roblox.jpg" data-caption="station 2">Roblox</span> (<a href="https://about.roblox.com/newsroom/2024/07/how-the-infrastructure-group-drives-the-future-of-everything-we-do-at-roblox">Physical Networking Infrastructure</a>)</li>
+                <li>Technology Team at <a href="https://waterlooquantclub.com/">Waterloo Quant Club</a></li>
+                <li>Prev. Software Research Intern at <span class="reveal" data-img="/images/sunnybrook.jpg" data-caption="presenting my project">Sunnybrook</span> (Process Automation)</li>
+                <li>Prev. Software Developer and organizer of CxC at <a href="https://www.uwdatascience.ca/">UW Data Science Club</a></li>
+              </ul>
+            </li>
+            <li>
+              Personal Life
+              <ul>
+                <li>I have 2 cats named <span class="reveal" data-img="/images/cider.jpg" data-caption="my cat cider">Cider</span> and <span class="reveal" data-img="/images/geline.jpg" data-caption="my cat geline">Geline</span></li>
+                <li>I play dodgeball, hockey, <span class="reveal" data-img="/images/mlb.jpg" data-caption="jays world series game 6">baseball</span>, and a variety of other sports</li>
+                <li>I enjoy <span class="reveal" data-img="/images/bermuda.jpg" data-caption="bermuda">travelling</span>, cooking, <span class="reveal" data-img="/images/nmixx.jpg" data-caption="nmixx concert">music</span>, video games and side questing</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="projects" class="projects-section">
+        <h2 class="title">projects</h2>
+
+        <div id="projects-grid" class="projects-grid"></div>
+      </section>
+
+      <section id="contact" class="contact-section">
+        <h2 class="title">contact me</h2>
+
+        <div class="contact-links">
+          <a href="mailto:ianlemail012@gmail.com">Email</a>
+          <a href="https://github.com/IanLeung12" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="https://www.linkedin.com/in/ianleung12/" target="_blank" rel="noreferrer">LinkedIn</a>
+          <a href="https://x.com/ianl_012/" target="_blank" rel="noreferrer">X</a>
+        </div>
+      </section>
     </main>
+
+    <div id="project-modal" class="modal hidden">
+      <div class="modal-content">
+        <button class="modal-close" aria-label="Close">&times;</button>
+        <div id="modal-body"></div>
+      </div>
+    </div>
+
   <script type="module" src="/maze.ts"></script>
   <script type="module" src="/theme.ts"></script>
+  <script type="module" src="/reveal.ts"></script>
+  <script type="module" src="/grid.ts"></script>
   </body>
 </html>

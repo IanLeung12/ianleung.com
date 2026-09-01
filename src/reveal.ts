@@ -1,5 +1,4 @@
-// src/about/reveal.ts
-// Hover-word image popover for the About page.
+// Hover-word image popover for the about section.
 //
 // Mark a word in the HTML like:
 //   <span class="reveal" data-img="/images/cider.jpg" data-caption="Cider, 2024">Cider</span>
