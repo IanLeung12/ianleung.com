@@ -167,7 +167,7 @@ a {
  * About section
  * ---------------------------------- */
 .about-section {
-  width: min(100%, 720px);
+  width: min(100%, 860px);
   margin-inline: auto;
   box-sizing: border-box;
   min-height: 100svh;
