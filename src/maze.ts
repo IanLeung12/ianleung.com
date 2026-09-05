@@ -40,9 +40,9 @@ const LIGHT: Palette = {
     walk: "#f0eccb",
     current: "#cfeccf",
     visited: "#f2ebde",
-    pathEnd: "#d9f0d9",
-    pathDfs: "#f3dcdc",
-    pathAstar: "#dcebf4",
+    pathEnd: "#c4e4c4",
+    pathDfs: "#ecc8c8",
+    pathAstar: "#c8dfec",
 };
 
 // Dark is monochrome, kept in the darker range so the cream text always
