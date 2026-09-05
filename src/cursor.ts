@@ -17,7 +17,7 @@ let currentRadius = holeRadius;
 const trail: Array<{ x: number; y: number; time: number }> = [];
 
 const buttons = Array.from(document.querySelectorAll(".nav-btn")) as HTMLElement[];
-const maxDistPadding = 30; // bigger = wider influence
+const maxDistPadding = 60; // bigger = wider influence
 const minOpacity = 0.55; // lowest opacity near cursor
 
 document.addEventListener("mousemove", (e) => {
