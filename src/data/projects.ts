@@ -37,5 +37,14 @@ export const projects: Project[] = [
         tools: ["Java"],
         thumbnail: "/images/cheerville.gif",
         image: "/images/cheerville.gif"
+    },
+    {
+        title: "Portfolio Advisor",
+        short_desc: "Mathematical Portfolio Selection",
+        description: "A quantitative, model-driven investment portfolio designed to systematically outperform market benchmarks. 2nd Place in CFM Competition.",
+        github: "https://github.com/IanLeung12/CFM-Group-Project",
+        tools: ["Python", "Pandas", "Numpy", "Matplotlib"],
+        thumbnail: "/images/cfm.gif",
+        image: "/images/cfm.gif"
     }
 ]
