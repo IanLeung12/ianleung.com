@@ -3,7 +3,8 @@
   "pattern": "cv-{version}-{theme}.pdf",
   "versions": [
     { "id": "general", "label": "General" },
-    { "id": "quant", "label": "quant" }
+    { "id": "quant", "label": "Quant" },
+    { "id": "wworks", "label": "Wworks" }
   ],
   "themes": [
     { "id": "blue", "label": "Blue", "swatch": "#26338c" },
