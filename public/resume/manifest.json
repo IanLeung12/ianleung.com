@@ -10,6 +10,6 @@
     { "id": "blue", "label": "Blue", "swatch": "#26338c" },
     { "id": "green", "label": "Green", "swatch": "#1f7338" },
     { "id": "burgundy", "label": "Burgundy", "swatch": "#801f33" },
-    { "id": "black", "label": "Black", "swatch": "#262626" }
+    { "id": "black", "label": "Black", "swatch": "#000000" }
   ]
 }
