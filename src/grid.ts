@@ -6,6 +6,7 @@ interface Project {
   short_desc: string;
   thumbnail: string;
   image?: string;
+  video?: string;
   github?: string;
   link?: string;
   tools: string[];
@@ -33,10 +34,33 @@ grid.innerHTML = typedProjects
   `)
   .join("");
 
+// Warm the browser cache for a project's hero media before the modal opens.
+// Fired on hover/focus so the file is usually in flight (or done) by click time.
+const prefetched = new Set<string>();
+function prefetch(url?: string) {
+  if (!url || prefetched.has(url)) return;
+  prefetched.add(url);
+  fetch(url, { priority: "low" } as RequestInit).catch(() => prefetched.delete(url));
+}
+
+function prefetchProject(project: Project) {
+  prefetch(project.image);
+  prefetch(project.video);
+}
+
+function renderHero(project: Project) {
+  if (project.video) {
+    return `<video src="${project.video}" poster="${project.image ?? ""}" autoplay muted loop playsinline preload="auto" aria-label="${project.title}"></video>`;
+  }
+  return project.image ? `<img src="${project.image}" alt="${project.title}" />` : "";
+}
+
 grid.querySelectorAll(".project-entry").forEach((el, i) => {
   const entry = el as HTMLElement;
 
   entry.addEventListener("click", () => openModal(typedProjects[i]));
+  entry.addEventListener("pointerenter", () => prefetchProject(typedProjects[i]));
+  entry.addEventListener("focus", () => prefetchProject(typedProjects[i]));
 
   entry.addEventListener("keydown", (e: KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") {
@@ -51,7 +75,7 @@ let currentTiltCleanup: (() => void) | null = null;
 function openModal(project: Project) {
   modalBody.innerHTML = `
     <div class="modal-hero">
-      ${project.image ? `<img src="${project.image}" alt="${project.title}" />` : ""}
+      ${renderHero(project)}
       <h2>${project.title}</h2>
     </div>
     <div class="modal-detail">
@@ -101,6 +125,10 @@ function openModal(project: Project) {
     cancelAnimationFrame(rafId);
     content.style.transform = "";
   };
+
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    modalBody.querySelector("video")?.removeAttribute("autoplay");
+  }
 
   modal.classList.remove("hidden");
 }

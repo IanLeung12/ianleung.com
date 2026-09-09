@@ -18,7 +18,8 @@ export const projects: Project[] = [
         github: "https://github.com/IanLeung12/Trust-No-Ghost",
         tools: ["Unity", "C#", "Itch.io"],
         thumbnail: "/images/trustnoghost.png",
-        image: "/images/trustnoghost.gif",
+        image: "/images/trustnoghost.png",
+        video: "/videos/trustnoghost.mp4",
     },
     {
         title: "PeerAssist",
@@ -27,7 +28,8 @@ export const projects: Project[] = [
         github: "https://github.com/IanLeung12/PeerAssist",
         tools: ["Java", "Supabase", "PDFBox", "Gson", "FlatLaf", "Maven build"],
         thumbnail: "/images/peerassist.png",
-        image: "/images/peerassist.gif",
+        image: "/images/peerassist.png",
+        video: "/videos/peerassist.mp4",
     },
     {
         title: "Zombie Outbreak",
@@ -35,8 +37,9 @@ export const projects: Project[] = [
         description: "Cellular Automata Simulation of a Zombie Outbreak, with tunable variables and visualization. Also has a nuke button.",
         github: "https://github.com/IanLeung12/cheerville",
         tools: ["Java"],
-        thumbnail: "/images/cheerville.gif",
-        image: "/images/cheerville.gif"
+        thumbnail: "/videos/cheerville-poster.jpg",
+        image: "/videos/cheerville-poster.jpg",
+        video: "/videos/cheerville.mp4",
     },
     {
         title: "Portfolio Advisor",
@@ -44,8 +47,9 @@ export const projects: Project[] = [
         description: "A quantitative, model-driven investment portfolio designed to systematically outperform market benchmarks. 2nd Place in CFM Competition.",
         github: "https://github.com/IanLeung12/CFM-Group-Project",
         tools: ["Python", "Pandas", "Numpy", "Matplotlib"],
-        thumbnail: "/images/cfm.gif",
-        image: "/images/cfm.gif"
+        thumbnail: "/videos/cfm-poster.jpg",
+        image: "/videos/cfm-poster.jpg",
+        video: "/videos/cfm.mp4",
     },
     {
         title: "N-Body Simulation",
@@ -53,7 +57,8 @@ export const projects: Project[] = [
         description: "Simulates 100+ particles with gravity over a 2d plane. Uses the barnes-hut quadtree algorithm to improve calculations to O(nlogn) complexity. Currently being rewritten in C++",
         github: "https://github.com/IanLeung12/N-Body-Simulation",
         tools: ["Python", "Pyglet", "Numpy", "OpenGL"],
-        thumbnail: "/images/gravity.gif",
-        image: "/images/gravity.gif"
+        thumbnail: "/videos/gravity-poster.jpg",
+        image: "/videos/gravity-poster.jpg",
+        video: "/videos/gravity.mp4",
     }
 ]

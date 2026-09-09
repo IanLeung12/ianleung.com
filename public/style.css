@@ -375,7 +375,8 @@ a {
   overflow: hidden;
 }
 
-.modal-hero img {
+.modal-hero img,
+.modal-hero video {
   display: block;
   width: 100%;
   aspect-ratio: 16 / 9;
@@ -542,6 +543,7 @@ a {
   .modal-content,
   .modal.closing .modal-content,
   .modal-hero img,
+  .modal-hero video,
   .modal-hero h2,
   .modal-detail > * {
     animation: none;
