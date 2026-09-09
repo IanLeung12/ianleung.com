@@ -46,5 +46,14 @@ export const projects: Project[] = [
         tools: ["Python", "Pandas", "Numpy", "Matplotlib"],
         thumbnail: "/images/cfm.gif",
         image: "/images/cfm.gif"
+    },
+    {
+        title: "N-Body Simulation",
+        short_desc: "Particle Gravity Simulation",
+        description: "Simulates 100+ particles with gravity over a 2d plane. Uses the barnes-hut quadtree algorithm to improve calculations to O(nlogn) complexity. Currently being rewritten in C++",
+        github: "https://github.com/IanLeung12/N-Body-Simulation",
+        tools: ["Python", "Pyglet", "Numpy", "OpenGL"],
+        thumbnail: "/images/gravity.gif",
+        image: "/images/gravity.gif"
     }
 ]
