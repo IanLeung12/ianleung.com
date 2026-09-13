@@ -283,11 +283,18 @@ function draw() {
 
 // ---------- Scroll fade ----------
 // The maze belongs to the hero; fade it out quickly once the page scrolls.
+// style.css does this with a CSS scroll-driven animation where supported
+// (runs on the compositor, zero lag). Only fall back to JS when it isn't,
+// and sample scrollY every animation frame rather than on scroll events,
+// which fire late and made the maze pop in after scrolling back up.
+const cssScrollFade =
+    typeof CSS !== "undefined" && CSS.supports("animation-timeline: scroll()");
+
 function updateScrollFade() {
+    if (cssScrollFade) return;
     const fade = Math.max(0, 1 - window.scrollY / (window.innerHeight * 0.75));
     canvas.style.opacity = fade.toFixed(3);
 }
-window.addEventListener("scroll", updateScrollFade, { passive: true });
 updateScrollFade();
 
 // ---------- Main loop ----------
@@ -297,6 +304,7 @@ function animate() {
     } else {
         pathStep();
     }
+    updateScrollFade();
     draw();
     requestAnimationFrame(animate);
 }

@@ -161,6 +161,26 @@ a {
   top: 0;
   left: 0;
   z-index: -1;
+  /* Keep the canvas on its own compositor layer so fading back in from 0
+   * doesn't force the browser to rebuild/re-upload the whole layer. */
+  will-change: opacity;
+}
+
+/* Fade the maze out over the first 75vh of scroll. Driven by the compositor
+ * where scroll-driven animations are supported, so it tracks the scroll
+ * position exactly with no JS lag; maze.ts falls back to a per-frame update
+ * elsewhere. */
+@supports (animation-timeline: scroll()) {
+  .hero canvas {
+    animation: maze-fade linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0 75vh;
+  }
+}
+
+@keyframes maze-fade {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 
 /* ----------------------------------
