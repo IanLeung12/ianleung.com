@@ -20,6 +20,31 @@ const buttons = Array.from(document.querySelectorAll(".nav-btn")) as HTMLElement
 const maxDistPadding = 60; // bigger = wider influence
 const minOpacity = 0.55; // lowest opacity near cursor
 
+// The canvas and nav buttons scroll with the page and never move otherwise,
+// so measure their document-relative positions once (and on resize) instead
+// of calling getBoundingClientRect every frame, which forces layout mid-scroll.
+let canvasPageTop = 0;
+let canvasPageLeft = 0;
+const buttonPageCenters: Array<{ x: number; y: number }> = buttons.map(() => ({ x: 0, y: 0 }));
+
+function measure() {
+  const maze = document.getElementById("maze");
+  if (maze) {
+    const r = maze.getBoundingClientRect();
+    canvasPageLeft = r.left + window.scrollX;
+    canvasPageTop = r.top + window.scrollY;
+  }
+  buttons.forEach((el, i) => {
+    const r = el.getBoundingClientRect();
+    buttonPageCenters[i].x = r.left + r.width / 2 + window.scrollX;
+    buttonPageCenters[i].y = r.top + r.height / 2 + window.scrollY;
+  });
+}
+measure();
+window.addEventListener("resize", measure);
+// Web fonts loading can reflow the title/nav; re-measure once they're in.
+document.fonts?.ready.then(measure);
+
 document.addEventListener("mousemove", (e) => {
     cursorX = e.clientX;
     cursorY = e.clientY;
@@ -52,7 +77,7 @@ export function punchHole(ctx: CanvasRenderingContext2D) {
   const { x, y, radius } = updateCursorState();
   // Cursor coords are viewport-relative; the canvas scrolls with the page,
   // so map them into canvas space each frame.
-  const canvasRect = ctx.canvas.getBoundingClientRect();
+  const canvasRect = { left: canvasPageLeft - window.scrollX, top: canvasPageTop - window.scrollY };
   const cx = x - canvasRect.left;
   const cy = y - canvasRect.top;
   const now = performance.now();
@@ -104,10 +129,11 @@ export function punchHole(ctx: CanvasRenderingContext2D) {
 export function updateButtonDarkness() {
   const { x, y, radius } = updateCursorState();
   const maxDist = radius + maxDistPadding;
-  for (const el of buttons) {
-    const r = el.getBoundingClientRect();
-    const cx = r.left + r.width / 2;
-    const cy = r.top + r.height / 2;
+  const sx = window.scrollX;
+  const sy = window.scrollY;
+  buttons.forEach((el, i) => {
+    const cx = buttonPageCenters[i].x - sx;
+    const cy = buttonPageCenters[i].y - sy;
 
     const dx = cx - x;
     const dy = cy - y;
@@ -116,5 +142,5 @@ export function updateButtonDarkness() {
     const t = Math.max(0, Math.min(1, 1 - dist / maxDist));
     const opacity = minOpacity + (1 - minOpacity) * t;
     el.style.opacity = `${opacity}`;
-  }
+  });
 }

@@ -68,6 +68,7 @@ let COLOR: Palette = paletteForTheme();
 
 window.addEventListener("themechange", () => {
     COLOR = paletteForTheme();
+    wallCache = null; // colours changed; re-render the static wall layer
 });
 
 // ---------- Maze state ----------
@@ -237,21 +238,49 @@ function tracePath(from: number, color: string) {
     }
 }
 
-function drawWalls() {
-    ctx.strokeStyle = COLOR.wall;
-    ctx.lineWidth = 2;
+function renderWalls(g: CanvasRenderingContext2D) {
+    g.strokeStyle = COLOR.wall;
+    g.lineWidth = 2;
+    g.fillStyle = COLOR.cell;
+    // Fill every carved cell first, then stroke all walls as one path: far
+    // fewer draw calls than a beginPath/stroke per wall segment.
+    for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) {
+            if (maze[y * cols + x] !== -1) {
+                g.fillRect(x * cellSize + offsetX, y * cellSize + offsetY, cellSize, cellSize);
+            }
+        }
+    }
+    g.beginPath();
     for (let y = 0; y < rows; y++) {
         for (let x = 0; x < cols; x++) {
             const c = maze[y * cols + x];
             const x0 = x * cellSize + offsetX;
             const y0 = y * cellSize + offsetY;
-            if (c !== -1) { ctx.fillStyle = COLOR.cell; ctx.fillRect(x0, y0, cellSize, cellSize); }
-            if ((c & N) === 0) { ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x0 + cellSize, y0); ctx.stroke(); }
-            if ((c & E) === 0) { ctx.beginPath(); ctx.moveTo(x0 + cellSize, y0); ctx.lineTo(x0 + cellSize, y0 + cellSize); ctx.stroke(); }
-            if ((c & S) === 0) { ctx.beginPath(); ctx.moveTo(x0, y0 + cellSize); ctx.lineTo(x0 + cellSize, y0 + cellSize); ctx.stroke(); }
-            if ((c & W) === 0) { ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x0, y0 + cellSize); ctx.stroke(); }
+            if ((c & N) === 0) { g.moveTo(x0, y0); g.lineTo(x0 + cellSize, y0); }
+            if ((c & E) === 0) { g.moveTo(x0 + cellSize, y0); g.lineTo(x0 + cellSize, y0 + cellSize); }
+            if ((c & S) === 0) { g.moveTo(x0, y0 + cellSize); g.lineTo(x0 + cellSize, y0 + cellSize); }
+            if ((c & W) === 0) { g.moveTo(x0, y0); g.lineTo(x0, y0 + cellSize); }
         }
     }
+    g.stroke();
+}
+
+// Once the maze is fully built its walls never change, so render them once to
+// an offscreen canvas and blit that each frame instead of re-stroking ~1300
+// cells. Keeping the per-frame cost low leaves the main thread free to
+// re-rasterize the hero when the user scrolls back up to it.
+let wallCache: HTMLCanvasElement | null = null;
+
+function drawWalls() {
+    if (remaining > 0) { renderWalls(ctx); return; }
+    if (!wallCache) {
+        wallCache = document.createElement("canvas");
+        wallCache.width = width;
+        wallCache.height = height;
+        renderWalls(wallCache.getContext("2d")!);
+    }
+    ctx.drawImage(wallCache, 0, 0);
 }
 
 function draw() {
@@ -290,10 +319,13 @@ function draw() {
 const cssScrollFade =
     typeof CSS !== "undefined" && CSS.supports("animation-timeline: scroll()");
 
+function scrollFade(): number {
+    return Math.max(0, 1 - window.scrollY / (window.innerHeight * 0.75));
+}
+
 function updateScrollFade() {
     if (cssScrollFade) return;
-    const fade = Math.max(0, 1 - window.scrollY / (window.innerHeight * 0.75));
-    canvas.style.opacity = fade.toFixed(3);
+    canvas.style.opacity = scrollFade().toFixed(3);
 }
 updateScrollFade();
 
@@ -305,7 +337,10 @@ function animate() {
         pathStep();
     }
     updateScrollFade();
-    draw();
+    // Fully faded out (scrolled past the hero): skip all rendering so the
+    // main thread is idle when the user scrolls back and the hero's layers
+    // need to be re-rasterized. Simulation keeps ticking so nothing stalls.
+    if (scrollFade() > 0) draw();
     requestAnimationFrame(animate);
 }
 
