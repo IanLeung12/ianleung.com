@@ -3,13 +3,12 @@ import type { Project } from "./project";
 
 export const projects: Project[] = [
     {
-        title: "Pharmagotchi",
-        short_desc: "Your virtual pharmacy friend.",
-        description: "Tamagotchi-inspired Android app where your virtual pet (pharmagotchi) provides regular reminders and health recommendations to keep you on top of your health. Graph your metrics, receive AI-powered feedback, and automatically connect with health care providers when needed.",
-        github: "https://github.com/dilhrm/Pharmagotchi",
-        tools: ["Android Studio", "Kotlin", "Openrouter", "Figma", "JavaMail"],
-        thumbnail: "/images/pharmagotchi.png",
-        image: "/images/pharmagotchi.png",
+        title: "Jevis",
+        short_desc: "Jev for Browser Use",
+        description: "Browser use that actually works. Several times faster and 250x cheaper than GPT-6 Astra on comparable tasks. Hack the North Winner ($2000)",
+        tools: ["Python", "Jev", "DOM", "OpenAI"],
+        thumbnail: "/videos/jevis.mp4",
+        video: "/videos/jevis.mp4",
     },
     {
         title: "Trust No Ghost",
@@ -32,14 +31,13 @@ export const projects: Project[] = [
         video: "/videos/peerassist.mp4",
     },
     {
-        title: "Zombie Outbreak",
-        short_desc: "Cellular Automata Simulation",
-        description: "Cellular Automata Simulation of a Zombie Outbreak, with tunable variables and visualization. Also has a nuke button.",
-        github: "https://github.com/IanLeung12/cheerville",
-        tools: ["Java"],
-        thumbnail: "/videos/cheerville-poster.jpg",
-        image: "/videos/cheerville-poster.jpg",
-        video: "/videos/cheerville.mp4",
+        title: "Pharmagotchi",
+        short_desc: "Your virtual pharmacy friend.",
+        description: "Tamagotchi-inspired Android app where your virtual pet (pharmagotchi) provides regular reminders and health recommendations to keep you on top of your health. Graph your metrics, receive AI-powered feedback, and automatically connect with health care providers when needed.",
+        github: "https://github.com/dilhrm/Pharmagotchi",
+        tools: ["Android Studio", "Kotlin", "Openrouter", "Figma", "JavaMail"],
+        thumbnail: "/images/pharmagotchi.png",
+        image: "/images/pharmagotchi.png",
     },
     {
         title: "Portfolio Advisor",
