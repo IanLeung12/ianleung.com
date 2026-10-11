@@ -184,6 +184,36 @@ a {
 }
 
 /* ----------------------------------
+ * Boids background
+ * ---------------------------------- */
+/* Fixed behind the content below the hero. It sits earlier in the DOM than
+ * the maze so the maze paints on top while they crossfade: the boids fade in
+ * over 50-100vh of scroll as the maze finishes fading out. boids.ts falls
+ * back to a per-frame update where scroll timelines aren't supported. */
+#boids {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  will-change: opacity;
+}
+
+@supports (animation-timeline: scroll()) {
+  #boids {
+    animation: boids-fade linear both;
+    animation-timeline: scroll(root);
+    animation-range: 50vh 100vh;
+  }
+}
+
+@keyframes boids-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ----------------------------------
  * About section
  * ---------------------------------- */
 .about-section {

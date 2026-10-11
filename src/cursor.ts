@@ -71,21 +71,27 @@ function updateCursorState() {
   return { x: cursorX, y: cursorY, radius: currentRadius };
 }
 
-// Cursor position in canvas space (the canvas scrolls with the page).
-export function getCursorCanvasPos(): { x: number; y: number } {
-  return {
-    x: cursorX - (canvasPageLeft - window.scrollX),
-    y: cursorY - (canvasPageTop - window.scrollY),
-  };
+// Viewport position of a canvas's top-left corner. The hero canvas scrolls
+// with the page, so its origin moves; a position: fixed canvas passes
+// VIEWPORT_ORIGIN instead.
+type Origin = { left: number; top: number };
+export const VIEWPORT_ORIGIN: Origin = { left: 0, top: 0 };
+
+function heroOrigin(): Origin {
+  return { left: canvasPageLeft - window.scrollX, top: canvasPageTop - window.scrollY };
 }
 
-export function punchHole(ctx: CanvasRenderingContext2D) {
+// Cursor position in canvas space.
+export function getCursorCanvasPos(origin: Origin = heroOrigin()): { x: number; y: number } {
+  return { x: cursorX - origin.left, y: cursorY - origin.top };
+}
+
+export function punchHole(ctx: CanvasRenderingContext2D, origin: Origin = heroOrigin()) {
     ctx.save();
     ctx.globalCompositeOperation = "destination-out";
   const { x, y, radius } = updateCursorState();
-  // Cursor coords are viewport-relative; the canvas scrolls with the page,
-  // so map them into canvas space each frame.
-  const canvasRect = { left: canvasPageLeft - window.scrollX, top: canvasPageTop - window.scrollY };
+  // Cursor coords are viewport-relative; map them into canvas space.
+  const canvasRect = origin;
   const cx = x - canvasRect.left;
   const cy = y - canvasRect.top;
   const now = performance.now();

@@ -1,7 +1,9 @@
-import { punchHole, updateButtonDarkness, getCursorCanvasPos } from './cursor';
+import { punchHole, getCursorCanvasPos, VIEWPORT_ORIGIN } from './cursor';
 import { createFlock, stepFlock } from './flock';
 
 // ---------- Canvas ----------
+// position: fixed behind the content below the hero, so canvas space is
+// viewport space.
 const canvas = document.getElementById('boids') as HTMLCanvasElement;
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -30,8 +32,8 @@ type Palette = {
     boid: string;
 };
 
-// Same constraint as the maze: pale in light, dark in dark, so the title and
-// nav stay legible wherever the flock drifts.
+// Same constraint as the maze: pale in light, dark in dark, so the section
+// text stays legible wherever the flock drifts.
 const LIGHT: Palette = {
     boid: "rgb(196, 196, 196)",
 };
@@ -73,18 +75,19 @@ function draw() {
     }
     ctx.fill();
 
-    punchHole(ctx);
-    updateButtonDarkness();
+    punchHole(ctx, VIEWPORT_ORIGIN);
 }
 
 // ---------- Scroll fade ----------
-// Mirrors maze.ts: CSS scroll-driven animation where supported, per-frame JS
-// fallback elsewhere.
+// The reverse of maze.ts: fade in over 50-100vh of scroll as the maze fades
+// out. CSS scroll-driven animation where supported, per-frame JS fallback
+// elsewhere.
 const cssScrollFade =
     typeof CSS !== "undefined" && CSS.supports("animation-timeline: scroll()");
 
 function scrollFade(): number {
-    return Math.max(0, 1 - window.scrollY / (window.innerHeight * 0.75));
+    const vh = window.innerHeight;
+    return Math.min(1, Math.max(0, (window.scrollY - vh * 0.5) / (vh * 0.5)));
 }
 
 function updateScrollFade() {
@@ -100,9 +103,10 @@ function animate(now: number) {
     const dt = Math.min((now - lastTime) / 1000, maxDt);
     lastTime = now;
 
-    stepFlock(flock, dt, getCursorCanvasPos());
+    stepFlock(flock, dt, getCursorCanvasPos(VIEWPORT_ORIGIN));
     updateScrollFade();
-    // Fully faded out: skip rendering, keep simulating.
+    // Still on the hero (fully transparent): skip rendering, keep simulating
+    // so the flock has already formed by the time it's revealed.
     if (scrollFade() > 0) draw();
     requestAnimationFrame(animate);
 }
