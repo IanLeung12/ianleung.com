@@ -1,4 +1,4 @@
-import { punchHole, getCursorCanvasPos, VIEWPORT_ORIGIN } from './cursor';
+import { getCursorCanvasPos, VIEWPORT_ORIGIN } from './cursor';
 import { createFlock, stepFlock } from './flock';
 
 // ---------- Canvas ----------
@@ -74,8 +74,6 @@ function draw() {
         ctx.closePath();
         ctx.fill();
     }
-
-    punchHole(ctx, VIEWPORT_ORIGIN);
 }
 
 // ---------- Scroll fade ----------
