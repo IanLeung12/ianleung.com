@@ -32,14 +32,14 @@ type Palette = {
     boid: string;
 };
 
-// Same constraint as the maze: pale in light, dark in dark, so the section
-// text stays legible wherever the flock drifts.
+// Semi-transparent so overlapping boids build up a stronger tone, keeping a
+// single boid subtle behind the section text while dense flocks read clearly.
 const LIGHT: Palette = {
-    boid: "rgb(196, 196, 196)",
+    boid: "rgba(110, 108, 102, 0.45)",
 };
 
 const DARK: Palette = {
-    boid: "#5d5950",
+    boid: "rgba(150, 143, 130, 0.45)",
 };
 
 function paletteForTheme(): Palette {
@@ -59,21 +59,21 @@ const flock = createFlock(count, width, height);
 function draw() {
     ctx.clearRect(0, 0, width, height);
 
-    // Every pin goes into one path with a single fill, same batching idea as
-    // the maze walls.
+    // One fill per pin rather than one batched path: a single fill paints
+    // each pixel once, so overlapping pins wouldn't stack their alpha.
     ctx.fillStyle = COLOR.boid;
-    ctx.beginPath();
     for (const { x, y, vx, vy } of flock.boids) {
         const angle = Math.atan2(vy, vx);
         const hx = Math.cos(angle), hy = Math.sin(angle);
+        ctx.beginPath();
         ctx.moveTo(x + hx * pinTip, y + hy * pinTip);
         // arc() first draws a straight side from the tip to the tangent
         // point, then sweeps the long way round the back of the head.
         ctx.arc(x - hx * pinBack, y - hy * pinBack, pinRadius,
             angle + pinSpread, angle - pinSpread);
         ctx.closePath();
+        ctx.fill();
     }
-    ctx.fill();
 
     punchHole(ctx, VIEWPORT_ORIGIN);
 }
