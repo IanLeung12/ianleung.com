@@ -60,5 +60,13 @@ export const projects: Project[] = [
         thumbnail: "/videos/gravity-poster.jpg",
         image: "/videos/gravity-poster.jpg",
         video: "/videos/gravity.mp4",
+    },
+    {
+        title: "Jevis",
+        short_desc: "Jev for Browser Use",
+        description: "Browser use that actually works. Several times faster and 250x cheaper than GPT-6 Astra on comparable tasks. Hack the North Winner ($2000)",
+        tools: ["Python", "Jev", "DOM", "OpenAI"],
+        thumbnail: "/videos/jevis.mp4",
+        video: "/videos/jevis.mp4",
     }
 ]
