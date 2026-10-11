@@ -139,6 +139,10 @@ function closeModal() {
     currentTiltCleanup = null;
   }
 
+  // Hidden modal content isn't removed until the next open; stop the
+  // looping video so it doesn't keep decoding in the background.
+  modalBody.querySelector("video")?.pause();
+
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     modal.classList.add("hidden");
     return;
