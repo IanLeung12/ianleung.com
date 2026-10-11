@@ -28,9 +28,9 @@ let canvasPageLeft = 0;
 const buttonPageCenters: Array<{ x: number; y: number }> = buttons.map(() => ({ x: 0, y: 0 }));
 
 function measure() {
-  const maze = document.getElementById("maze");
-  if (maze) {
-    const r = maze.getBoundingClientRect();
+  const canvas = document.querySelector(".hero canvas");
+  if (canvas) {
+    const r = canvas.getBoundingClientRect();
     canvasPageLeft = r.left + window.scrollX;
     canvasPageTop = r.top + window.scrollY;
   }
@@ -69,6 +69,14 @@ function updateCursorState() {
   currentRadius += (targetRadius - currentRadius) * rk;
 
   return { x: cursorX, y: cursorY, radius: currentRadius };
+}
+
+// Cursor position in canvas space (the canvas scrolls with the page).
+export function getCursorCanvasPos(): { x: number; y: number } {
+  return {
+    x: cursorX - (canvasPageLeft - window.scrollX),
+    y: cursorY - (canvasPageTop - window.scrollY),
+  };
 }
 
 export function punchHole(ctx: CanvasRenderingContext2D) {
