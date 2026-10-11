@@ -21,9 +21,12 @@ function init(): void {
   const img = document.createElement('img');
   img.alt = '';
   img.decoding = 'async';
+  const placeholder = document.createElement('div');
+  placeholder.className = 'reveal-placeholder';
+  placeholder.setAttribute('aria-hidden', 'true');
   const caption = document.createElement('span');
   caption.className = 'reveal-caption';
-  popover.append(img, caption);
+  popover.append(img, placeholder, caption);
   document.body.appendChild(popover);
 
   const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
@@ -42,11 +45,11 @@ function init(): void {
     img.alt = cap || 'preview image';
   }
 
-  // Swap the popover's image+caption atomically. The new image is decoded
-  // off-DOM first, so the on-DOM img keeps showing the previous (already
-  // decoded) frame until the replacement is ready — no stale-caption-over-old-
-  // image flash, and no zero-height collapse. Rapid switches bump loadToken so
-  // a slow load that resolves late can't overwrite a newer one.
+  // Swap the popover's image+caption. The new image is decoded off-DOM; while
+  // it's in flight the popover shows a skeleton placeholder (never the previous
+  // word's image). Already-cached images commit synchronously so they don't
+  // flash the placeholder. Rapid switches bump loadToken so a slow load that
+  // resolves late can't overwrite a newer one.
   function loadFrom(word: HTMLElement): void {
     const src = word.dataset.img;
     if (!src) return;
@@ -65,21 +68,32 @@ function init(): void {
       if (myToken !== loadToken || activeWord !== word) return; // superseded / hidden
       img.src = src;
       currentSrc = src;
+      popover.classList.remove('loading');
       applyCaption(word);
       reposition(); // popover height changed with the new image
     };
+
+    if (pre.complete && pre.naturalWidth > 0) {
+      commit(); // in memory cache: swap immediately, no placeholder flash
+      return;
+    }
+
+    // Not ready yet: drop the stale image and show the placeholder meanwhile.
+    currentSrc = '';
+    popover.classList.add('loading');
+    applyCaption(word);
+    reposition();
 
     if (typeof pre.decode === 'function') {
       pre.decode().then(commit).catch(() => {
         if (pre.complete && pre.naturalWidth > 0) commit();
         else {
           pre.addEventListener('load', commit, { once: true });
-          pre.addEventListener('error', () => {}, { once: true }); // keep old image on failure
+          pre.addEventListener('error', () => {}, { once: true }); // keep placeholder on failure
         }
       });
     } else {
       pre.addEventListener('load', commit, { once: true });
-      pre.addEventListener('error', () => {}, { once: true });
     }
   }
 
