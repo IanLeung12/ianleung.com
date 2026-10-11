@@ -388,8 +388,9 @@ a {
   inset: 0;
   z-index: 100;
   padding: var(--space-4);
-  background: rgba(20, 20, 20, 0.55);
-  backdrop-filter: blur(4px);
+  /* No backdrop-filter: blurring the animated boids canvas every frame is
+     a heavy GPU load. A darker scrim reads similarly. */
+  background: rgba(20, 20, 20, 0.68);
   display: grid;
   place-items: center;
   animation: modal-fade 0.2s ease;
