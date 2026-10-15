@@ -630,6 +630,19 @@ a {
   transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
+/* Pinned: interactive so the image can be right-clicked / dragged / saved and
+ * the caption selected. */
+.reveal-popover.pinned {
+  pointer-events: auto;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.reveal-popover.pinned img {
+  cursor: default;
+  -webkit-user-drag: auto;
+}
+
 .reveal-popover.visible {
   opacity: 1;
   transform: none;

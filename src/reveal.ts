@@ -133,22 +133,28 @@ function init(): void {
     popover.style.top = `${top}px`;
   }
 
-  // Click (or tap) pins a word's popover in place: it stops following the
-  // cursor, ignores hovering other words, and stays open until the same word
-  // is clicked again, something else is clicked, or Escape is pressed. While
-  // pinned it keeps its offset from the word, so it scrolls along with it.
+  // Click (or tap) pins a word's popover directly above the word (below if
+  // there's no room). It stops following the cursor, ignores hovering other
+  // words, scrolls along with the word, and becomes interactive so the image
+  // can be right-clicked, dragged or saved and the caption selected. It stays
+  // until the same word is clicked again, something else is clicked, or
+  // Escape is pressed.
   let pinned: HTMLElement | null = null;
-  let pinDX = 0;
-  let pinDY = 0;
+  let pinBelow = false;
 
   function placePinned(): void {
     if (!pinned) return;
     const wr = pinned.getBoundingClientRect();
     const rect = popover.getBoundingClientRect();
     const vw = window.innerWidth;
-    const left = Math.max(MARGIN, Math.min(wr.left + pinDX, vw - MARGIN - rect.width));
+    let left = wr.left + wr.width / 2 - rect.width / 2;
+    left = Math.max(MARGIN, Math.min(left, vw - MARGIN - rect.width));
+    // Recomputed from the live height so it stays anchored after the image
+    // finishes loading; the side is fixed at pin time so it doesn't flip
+    // mid-scroll.
+    const top = pinBelow ? wr.bottom + OFFSET / 2 : wr.top - OFFSET / 2 - rect.height;
     popover.style.left = `${left}px`;
-    popover.style.top = `${wr.top + pinDY}px`;
+    popover.style.top = `${top}px`;
   }
 
   function reposition(): void {
@@ -174,17 +180,17 @@ function init(): void {
   function pin(word: HTMLElement): void {
     if (pinned && pinned !== word) pinned.classList.remove('pinned');
     if (activeWord !== word) show(word);
-    if (canHover) positionAtPoint(lastX, lastY);
-    else positionAtWord(word);
-    const wr = word.getBoundingClientRect();
-    pinDX = parseFloat(popover.style.left) - wr.left;
-    pinDY = parseFloat(popover.style.top) - wr.top;
     pinned = word;
     word.classList.add('pinned');
+    popover.classList.add('pinned');
+    const wr = word.getBoundingClientRect();
+    pinBelow = wr.top - OFFSET / 2 - popover.getBoundingClientRect().height < MARGIN;
+    placePinned();
   }
 
   function unpin(): void {
     pinned?.classList.remove('pinned');
+    popover.classList.remove('pinned');
     pinned = null;
   }
 
@@ -279,7 +285,9 @@ function init(): void {
   }
 
   // Clicking anywhere that isn't a photo word (those stop propagation) unpins.
-  document.addEventListener('click', () => {
+  document.addEventListener('click', (e) => {
+    // Clicks on the pinned popover itself (selecting, saving) keep it open.
+    if (popover.contains(e.target as Node)) return;
     if (pinned) {
       unpin();
       hide();
