@@ -68,6 +68,8 @@ grid.querySelectorAll(".project-entry").forEach((el, i) => {
   });
 });
 
+let currentTiltCleanup: (() => void) | null = null;
+
 function openModal(project: Project) {
   modalBody.innerHTML = `
     <div class="modal-hero">
@@ -87,6 +89,44 @@ function openModal(project: Project) {
     </div>
   `;
 
+  const content = document.querySelector(".modal-content") as HTMLElement;
+  let rafId = 0;
+  let lastEvent: PointerEvent | null = null;
+
+  function updateFromEvent() {
+    if (!lastEvent) return;
+    const rect = content.getBoundingClientRect();
+    const x = (lastEvent.clientX - rect.left) / rect.width;
+    const y = (lastEvent.clientY - rect.top) / rect.height;
+    const nx = x - 0.5;
+    const ny = y - 0.5;
+    content.style.transform = `perspective(1000px) rotateX(${(-ny * 5).toFixed(2)}deg) rotateY(${(nx * 5).toFixed(2)}deg)`;
+  }
+
+  function onMove(e: PointerEvent) {
+    lastEvent = e;
+    if (rafId) return;
+    rafId = requestAnimationFrame(() => {
+      rafId = 0;
+      updateFromEvent();
+    });
+  }
+
+  function onLeave() {
+    lastEvent = null;
+    content.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg)";
+  }
+
+  content.addEventListener("pointermove", onMove);
+  content.addEventListener("pointerleave", onLeave);
+
+  currentTiltCleanup = () => {
+    content.removeEventListener("pointermove", onMove);
+    content.removeEventListener("pointerleave", onLeave);
+    cancelAnimationFrame(rafId);
+    content.style.transform = "";
+  };
+
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     modalBody.querySelector("video")?.removeAttribute("autoplay");
   }
@@ -95,6 +135,11 @@ function openModal(project: Project) {
 }
 
 function closeModal() {
+  if (currentTiltCleanup) {
+    currentTiltCleanup();
+    currentTiltCleanup = null;
+  }
+
   // Hidden modal content isn't removed until the next open; stop the
   // looping video so it doesn't keep decoding in the background.
   modalBody.querySelector("video")?.pause();
