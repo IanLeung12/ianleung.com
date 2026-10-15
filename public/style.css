@@ -766,56 +766,54 @@ a {
  * ---------------------------------- */
 .theme-toggle {
   position: fixed;
-  top: 16px;
-  right: 18px;
+  top: 18px;
+  right: 22px;
   z-index: 60;
-  width: 38px;
-  height: 38px;
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--surface);
-  color: var(--fg);
+  display: flex;
+  align-items: baseline;
+  gap: 0.5em;
+  padding: 4px 2px;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-size: var(--text-sm);
+  letter-spacing: 0.02em;
+  color: var(--muted);
   cursor: pointer;
-  box-shadow: var(--shadow);
-  transition: background 0.2s ease, border-color 0.2s ease,
-    transform 0.2s ease, color 0.35s ease;
 }
 
-.theme-toggle:hover {
-  border-color: var(--border-strong);
-  transform: translateY(-1px);
+.theme-toggle .sep {
+  opacity: 0.5;
 }
 
-.theme-toggle:active {
-  transform: scale(0.94);
+/* Active mode reads in full ink; the other stays muted. */
+:root:not([data-theme="dark"]) .theme-toggle .opt-light,
+:root[data-theme="dark"] .theme-toggle .opt-dark {
+  color: var(--fg);
+}
+
+/* Hover underlines the mode you'd switch to, like a link. */
+.theme-toggle .opt {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  text-decoration-color: transparent;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+}
+
+:root:not([data-theme="dark"]) .theme-toggle:hover .opt-dark,
+:root[data-theme="dark"] .theme-toggle:hover .opt-light {
+  text-decoration-color: currentColor;
 }
 
 .theme-toggle:focus-visible {
-  outline: 2px solid var(--fg);
-  outline-offset: 3px;
-}
-
-.theme-toggle svg {
-  width: 18px;
-  height: 18px;
-}
-
-.theme-toggle .icon-moon {
-  display: none;
-}
-
-:root[data-theme="dark"] .theme-toggle .icon-sun {
-  display: none;
-}
-
-:root[data-theme="dark"] .theme-toggle .icon-moon {
-  display: block;
+  outline: 1.5px solid var(--fg);
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .theme-toggle {
+  .theme-toggle .opt {
     transition: none;
   }
 }
