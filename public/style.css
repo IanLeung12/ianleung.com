@@ -605,7 +605,8 @@ a {
 }
 
 .reveal:hover,
-.reveal:focus-visible {
+.reveal:focus-visible,
+.reveal.pinned {
   text-decoration-color: var(--fg);
   outline: none;
 }

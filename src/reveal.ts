@@ -4,8 +4,9 @@
 //   <span class="reveal" data-img="/images/cider.jpg" data-caption="Cider, 2024">Cider</span>
 // data-img is required; data-caption is optional (omit -> image only).
 //
-// Desktop (hover + fine pointer): popover follows the cursor.
-// Touch: tap a word to toggle; tap elsewhere or scroll to dismiss.
+// Desktop (hover + fine pointer): popover follows the cursor; click to pin it.
+// Touch: tap a word to pin it; tap it again or tap elsewhere to dismiss.
+// Pinned popovers stay put (scrolling with their word) until dismissed.
 // Keyboard: focus a word to show it, Escape (or blur) to hide.
 
 const OFFSET = 16; // gap between the cursor/word and the popover
@@ -132,9 +133,28 @@ function init(): void {
     popover.style.top = `${top}px`;
   }
 
+  // Click (or tap) pins a word's popover in place: it stops following the
+  // cursor, ignores hovering other words, and stays open until the same word
+  // is clicked again, something else is clicked, or Escape is pressed. While
+  // pinned it keeps its offset from the word, so it scrolls along with it.
+  let pinned: HTMLElement | null = null;
+  let pinDX = 0;
+  let pinDY = 0;
+
+  function placePinned(): void {
+    if (!pinned) return;
+    const wr = pinned.getBoundingClientRect();
+    const rect = popover.getBoundingClientRect();
+    const vw = window.innerWidth;
+    const left = Math.max(MARGIN, Math.min(wr.left + pinDX, vw - MARGIN - rect.width));
+    popover.style.left = `${left}px`;
+    popover.style.top = `${wr.top + pinDY}px`;
+  }
+
   function reposition(): void {
     if (!activeWord) return;
-    if (canHover) positionAtPoint(lastX, lastY);
+    if (pinned === activeWord) placePinned();
+    else if (canHover) positionAtPoint(lastX, lastY);
     else positionAtWord(activeWord);
   }
 
@@ -151,8 +171,35 @@ function init(): void {
     popover.classList.remove('visible');
   }
 
+  function pin(word: HTMLElement): void {
+    if (pinned && pinned !== word) pinned.classList.remove('pinned');
+    if (activeWord !== word) show(word);
+    if (canHover) positionAtPoint(lastX, lastY);
+    else positionAtWord(word);
+    const wr = word.getBoundingClientRect();
+    pinDX = parseFloat(popover.style.left) - wr.left;
+    pinDY = parseFloat(popover.style.top) - wr.top;
+    pinned = word;
+    word.classList.add('pinned');
+  }
+
+  function unpin(): void {
+    pinned?.classList.remove('pinned');
+    pinned = null;
+  }
+
+  // Focus from a mouse click or tap shouldn't open/move anything (the click
+  // handler owns that); only keyboard focus shows the popover by itself.
+  function isKeyboardFocus(word: HTMLElement): boolean {
+    try {
+      return word.matches(':focus-visible');
+    } catch {
+      return true;
+    }
+  }
+
   function onPointerMove(e: PointerEvent): void {
-    if (!activeWord) return;
+    if (!activeWord || pinned) return;
     lastX = e.clientX;
     lastY = e.clientY;
     if (rafId) return;
@@ -167,6 +214,7 @@ function init(): void {
 
     if (canHover) {
       word.addEventListener('pointerenter', (e) => {
+        if (pinned) return;
         lastX = e.clientX;
         lastY = e.clientY;
         show(word);
@@ -174,48 +222,88 @@ function init(): void {
       });
       word.addEventListener('pointermove', onPointerMove);
       word.addEventListener('pointerleave', () => {
+        if (pinned) return;
         // Don't hide while the word is keyboard-focused (focus and hover would fight).
-        if (document.activeElement !== word) hide();
-      });
-    } else {
-      word.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (activeWord === word) {
-          hide();
-        } else {
-          show(word);
-          positionAtWord(word);
-        }
+        if (document.activeElement === word && isKeyboardFocus(word)) return;
+        hide();
       });
     }
 
+    word.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (canHover) {
+        lastX = e.clientX;
+        lastY = e.clientY;
+      }
+      if (pinned === word) {
+        unpin();
+        // Still under the cursor on desktop: drop back to the normal hover preview.
+        if (canHover) positionAtPoint(lastX, lastY);
+        else hide();
+      } else {
+        pin(word);
+      }
+    });
+
     // Keyboard support on every device.
     word.addEventListener('focus', () => {
+      if (pinned || !isKeyboardFocus(word)) return;
       show(word);
       positionAtWord(word);
     });
-    word.addEventListener('blur', hide);
+    word.addEventListener('blur', () => {
+      if (pinned || activeWord !== word) return;
+      if (canHover && word.matches(':hover')) return;
+      hide();
+    });
   });
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && activeWord) {
       activeWord.blur();
+      unpin();
       hide();
     }
   });
 
-  if (!canHover) {
-    document.addEventListener('click', () => {
-      if (activeWord) hide();
-    });
-    window.addEventListener(
-      'scroll',
-      () => {
-        if (activeWord) hide();
-      },
-      { passive: true },
-    );
+  // Safety net for the hover preview: some browsers fire pointerleave around
+  // the click itself, so after unpinning the word's own pointerleave may
+  // never come. Any movement off the word closes an unpinned preview.
+  if (canHover) {
+    document.addEventListener('pointermove', (e) => {
+      if (pinned || !activeWord) return;
+      if (activeWord.contains(e.target as Node)) return;
+      if (document.activeElement === activeWord && isKeyboardFocus(activeWord)) return;
+      hide();
+    }, { passive: true });
   }
+
+  // Clicking anywhere that isn't a photo word (those stop propagation) unpins.
+  document.addEventListener('click', () => {
+    if (pinned) {
+      unpin();
+      hide();
+    } else if (!canHover && activeWord) {
+      hide();
+    }
+  });
+
+  let scrollRaf = 0;
+  window.addEventListener(
+    'scroll',
+    () => {
+      if (pinned) {
+        if (scrollRaf) return;
+        scrollRaf = window.requestAnimationFrame(() => {
+          scrollRaf = 0;
+          placePinned();
+        });
+      } else if (!canHover && activeWord) {
+        hide();
+      }
+    },
+    { passive: true },
+  );
 }
 
 if (document.readyState === 'loading') {
