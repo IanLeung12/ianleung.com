@@ -653,13 +653,20 @@ a {
   display: block;
 }
 
+/* The caption floats over the boids/maze, so it keeps a solid backing to stay
+ * legible; hairline border instead of a drop shadow to match the image. */
 .reveal-caption {
   display: block;
-  margin-top: var(--space-2);
+  width: fit-content;
+  margin: var(--space-2) auto 0;
+  padding: 2px 10px;
   text-align: center;
   font-size: 0.72rem;
   color: var(--muted);
   line-height: 1.4;
+  background: var(--bg);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
 }
 
 @media (prefers-reduced-motion: reduce) {
