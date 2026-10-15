@@ -605,7 +605,8 @@ a {
 }
 
 .reveal:hover,
-.reveal:focus-visible {
+.reveal:focus-visible,
+.reveal.pinned {
   text-decoration-color: var(--fg);
   outline: none;
 }
@@ -627,6 +628,19 @@ a {
   opacity: 0;
   transform: translateY(4px);
   transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+/* Pinned: interactive so the image can be right-clicked / dragged / saved and
+ * the caption selected. */
+.reveal-popover.pinned {
+  pointer-events: auto;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.reveal-popover.pinned img {
+  cursor: default;
+  -webkit-user-drag: auto;
 }
 
 .reveal-popover.visible {
