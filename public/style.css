@@ -267,6 +267,16 @@ a {
   text-decoration-color: currentColor;
 }
 
+/* Text-sized company logo placed before an organization's name. */
+.org-logo {
+  height: 1em;
+  width: 1em;
+  object-fit: contain;
+  vertical-align: -0.125em;
+  margin-right: 0.3em;
+  border-radius: 0.2em;
+}
+
 /* ----------------------------------
  * Projects section
  * ---------------------------------- */
