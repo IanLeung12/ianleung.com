@@ -21,14 +21,14 @@ export const projects: Project[] = [
         video: "/videos/trustnoghost.mp4",
     },
     {
-        title: "PeerAssist",
-        short_desc: "Peer Assistance Platform for Students",
-        description: "Java-based desktop app for students to publish, peer-edit, and review each other's assignments and work. Users sign up, upload PDF documents tagged by grade level and subject, and leave marks and comments on other students' work.",
-        github: "https://github.com/IanLeung12/PeerAssist",
-        tools: ["Java", "Supabase", "PDFBox", "Gson", "FlatLaf", "Maven build"],
-        thumbnail: "/images/peerassist.png",
-        image: "/images/peerassist.png",
-        video: "/videos/peerassist.mp4",
+        title: "OuterwoRLd",
+        short_desc: "2D Physics Game + Reinforcement Learning",
+        description: "2D spaceflight physics game built in C++ and OpenGL with procedural level generation & gravitational fields. Trained a custom PPO RL model to play the game from scratch using PyTorch, achieving a 97% success rate at max difficulty.",
+        github: "https://github.com/IanLeung12/outerworld",
+        tools: ["C++", "Python", "OpenGL", "PyTorch", "TensorBoard"],
+        thumbnail: "/images/outerworld.png",
+        image: "/images/outerworld.png",
+        video: "/videos/outerworld.mp4",
     },
     {
         title: "Pharmagotchi",
@@ -49,14 +49,4 @@ export const projects: Project[] = [
         image: "/videos/cfm-poster.jpg",
         video: "/videos/cfm.mp4",
     },
-    {
-        title: "N-Body Simulation",
-        short_desc: "Particle Gravity Simulation",
-        description: "Simulates 100+ particles with gravity over a 2d plane. Uses the barnes-hut quadtree algorithm to improve calculations to O(nlogn) complexity. Currently being rewritten in C++",
-        github: "https://github.com/IanLeung12/N-Body-Simulation",
-        tools: ["Python", "Pyglet", "Numpy", "OpenGL"],
-        thumbnail: "/videos/gravity-poster.jpg",
-        image: "/videos/gravity-poster.jpg",
-        video: "/videos/gravity.mp4",
-    }
 ]
