@@ -38,6 +38,7 @@ export const projects: Project[] = [
         tools: ["Android Studio", "Kotlin", "Openrouter", "Figma", "JavaMail"],
         thumbnail: "/images/pharmagotchi.png",
         image: "/images/pharmagotchi.png",
+        video: "/videos/pharmagotchi.mp4",
     },
     {
         title: "Portfolio Advisor",
