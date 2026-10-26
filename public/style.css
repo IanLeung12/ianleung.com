@@ -184,6 +184,36 @@ a {
 }
 
 /* ----------------------------------
+ * Boids background
+ * ---------------------------------- */
+/* Fixed behind the content below the hero. It sits earlier in the DOM than
+ * the maze so the maze paints on top while they crossfade: the boids fade in
+ * over 50-100vh of scroll as the maze finishes fading out. boids.ts falls
+ * back to a per-frame update where scroll timelines aren't supported. */
+#boids {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  will-change: opacity;
+}
+
+@supports (animation-timeline: scroll()) {
+  #boids {
+    animation: boids-fade linear both;
+    animation-timeline: scroll(root);
+    animation-range: 50vh 100vh;
+  }
+}
+
+@keyframes boids-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ----------------------------------
  * About section
  * ---------------------------------- */
 .about-section {
@@ -217,17 +247,24 @@ a {
 
 .about-section ul ul {
   margin-top: var(--space-1);
+  list-style: "–  ";
+}
+
+.about-section li::marker {
+  color: var(--muted);
 }
 
 .about-section a {
-  color: color-mix(in srgb, var(--fg) 30%, var(--muted) 70%);
+  color: var(--fg);
   text-decoration: underline;
-  text-decoration-thickness: 0.5px;
-  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 4px;
+  transition: text-decoration-color 0.2s ease;
 }
 
 .about-section a:hover {
-  color: var(--fg);
+  text-decoration-color: currentColor;
 }
 
 /* ----------------------------------
@@ -256,6 +293,7 @@ a {
 .project-entry {
   padding: var(--space-6) 0;
   border-bottom: 1px solid var(--border);
+  cursor: pointer;
 }
 
 .project-entry:last-child {
@@ -263,18 +301,36 @@ a {
 }
 
 .project-entry:focus-visible {
-  outline: 2px solid var(--fg);
+  outline: 1.5px solid var(--fg);
   outline-offset: -2px;
 }
 
 .project-entry h3 {
+  position: relative;
+  display: inline-block;
   font-family: "Gabarito", sans-serif;
   font-size: var(--text-xl);
   font-weight: 600;
   margin: 0 0 var(--space-1);
   color: var(--fg);
   line-height: 1.2;
-  cursor: pointer;
+}
+
+/* A quiet arrow hints the row opens something; absolutely positioned so the
+ * centred title doesn't shift when it appears. */
+.project-entry h3::after {
+  content: "→";
+  position: absolute;
+  left: 100%;
+  margin-left: 0.4em;
+  font-family: "B612 Mono", monospace;
+  font-weight: 400;
+  font-size: 0.7em;
+  top: 0.3em;
+  color: var(--muted);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .project-entry p {
@@ -282,68 +338,56 @@ a {
   font-size: var(--text-sm);
   color: var(--muted);
   line-height: 1.5;
+  transition: color 0.2s ease;
 }
 
+.project-entry:hover h3::after,
+.project-entry:focus-visible h3::after {
+  opacity: 1;
+  transform: none;
+}
+
+.project-entry:hover p,
+.project-entry:focus-visible p {
+  color: var(--fg);
+}
+
+/* Tools: a plain inline list, same voice as the rest of the page. */
 .tools {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
-  margin-bottom: var(--space-4);
-}
-
-.tool {
-  display: inline-block;
-  padding: 3px var(--space-2);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: var(--surface);
+  font-size: var(--text-sm);
   color: var(--muted);
-  font-size: 0.72rem;
-  letter-spacing: 0.01em;
-  white-space: nowrap;
 }
 
+.tool-sep {
+  opacity: 0.5;
+}
+
+/* Links: text links, styled like the about-section links. */
 .actions {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
-  margin-top: auto;
+  gap: var(--space-6);
+  font-size: var(--text-sm);
+}
+
+.actions:empty {
+  display: none;
 }
 
 .actions a {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 14px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  font-size: var(--text-sm);
-  font-weight: 400;
   color: var(--fg);
-  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-}
-
-.actions a svg {
-  width: 13px;
-  height: 13px;
-  flex-shrink: 0;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 4px;
+  transition: text-decoration-color 0.2s ease;
 }
 
 .actions a:hover {
-  background: var(--fg);
-  color: var(--bg);
-  border-color: var(--fg);
-}
-
-.actions a.action-primary {
-  background: var(--accent);
-  color: var(--accent-fg);
-  border-color: var(--accent);
-}
-
-.actions a.action-primary:hover {
-  background: var(--accent-strong);
-  border-color: var(--accent-strong);
+  text-decoration-color: currentColor;
 }
 
 /* ----------------------------------
@@ -358,11 +402,12 @@ a {
   inset: 0;
   z-index: 100;
   padding: var(--space-4);
-  background: rgba(20, 20, 20, 0.55);
-  backdrop-filter: blur(4px);
+  /* No backdrop-filter: blurring the animated boids canvas every frame is
+     a heavy GPU load. A darker scrim reads similarly. */
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
   display: grid;
   place-items: center;
-  animation: modal-fade 0.2s ease;
+  animation: modal-fade 0.18s ease;
 }
 
 .modal-content {
@@ -373,11 +418,10 @@ a {
   max-width: 600px;
   max-height: 90vh;
   background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
   overflow: hidden;
-  animation: modal-pop 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: modal-in 0.22s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 #modal-body {
@@ -388,11 +432,13 @@ a {
   overflow-y: auto;
 }
 
-/* Hero — same language as the card */
 .modal-hero {
-  position: relative;
   flex-shrink: 0;
-  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-hero:empty {
+  display: none;
 }
 
 .modal-hero img,
@@ -402,32 +448,6 @@ a {
   aspect-ratio: 16 / 9;
   object-fit: cover;
   object-position: center top;
-  animation: modal-hero-zoom 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.modal-hero::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to top,
-    rgba(0, 0, 0, 0.74),
-    rgba(0, 0, 0, 0.12) 50%,
-    transparent 72%
-  );
-}
-
-.modal-hero h2 {
-  position: absolute;
-  left: var(--space-6);
-  right: var(--space-6);
-  bottom: var(--space-4);
-  z-index: 2;
-  margin: 0;
-  color: #fff;
-  font-size: var(--text-2xl);
-  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.5);
-  animation: modal-rise 0.5s 0.12s both cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .modal-detail {
@@ -437,136 +457,73 @@ a {
   padding: var(--space-6);
 }
 
+.modal-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.modal-head h2 {
+  margin: 0;
+  font-size: var(--text-xl);
+}
+
 .modal-detail p {
   margin: 0;
   color: var(--muted);
   line-height: 1.6;
 }
 
-.modal-detail .tools {
-  margin-bottom: 0;
-}
-
-/* Content rises in sequence after the panel pops */
-.modal-detail > * {
-  animation: modal-rise 0.5s both cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.modal-detail > *:nth-child(1) {
-  animation-delay: 0.18s;
-}
-.modal-detail > *:nth-child(2) {
-  animation-delay: 0.26s;
-}
-.modal-detail > *:nth-child(3) {
-  animation-delay: 0.34s;
-}
-
 .modal-close {
-  position: absolute;
-  top: var(--space-4);
-  right: var(--space-4);
-  z-index: 5;
-  width: 34px;
-  height: 34px;
-  display: grid;
-  place-items: center;
+  flex-shrink: 0;
   border: none;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--bg) 90%, transparent);
-  backdrop-filter: blur(4px);
-  color: var(--fg);
-  font-size: var(--text-xl);
-  line-height: 1;
+  background: none;
+  padding: 2px 0;
+  font: inherit;
+  font-size: var(--text-sm);
+  color: var(--muted);
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.2s ease;
+  transition: color 0.2s ease;
 }
 
 .modal-close:hover {
-  background: var(--bg);
-  transform: scale(1.05);
+  color: var(--fg);
 }
 
-/* Graceful exit — dedicated keyframes so the animation reliably replays
-   (reusing the open animation names with `reverse` won't re-trigger). */
+.modal-close:focus-visible {
+  outline: 1.5px solid var(--fg);
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
+}
+
 .modal.closing {
-  animation: modal-fade-out 0.18s ease forwards;
-}
-
-.modal.closing .modal-content {
-  animation: modal-pop-out 0.18s cubic-bezier(0.4, 0, 1, 1) forwards;
+  animation: modal-fade-out 0.16s ease forwards;
 }
 
 @keyframes modal-fade {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-@keyframes modal-pop {
-  from {
-    opacity: 0;
-    transform: translateY(12px) scale(0.97);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes modal-rise {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes modal-hero-zoom {
-  from {
-    transform: scale(1.08);
-  }
-  to {
-    transform: scale(1);
-  }
+@keyframes modal-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
 }
 
 @keyframes modal-fade-out {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
-}
-
-@keyframes modal-pop-out {
-  from {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(10px) scale(0.98);
-  }
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .modal,
   .modal.closing,
-  .modal-content,
-  .modal.closing .modal-content,
-  .modal-hero img,
-  .modal-hero video,
-  .modal-hero h2,
-  .modal-detail > * {
+  .modal-content {
     animation: none;
+  }
+  .project-entry h3::after {
+    transition: none;
   }
 }
 
@@ -636,20 +593,27 @@ a {
 /* ----------------------------------
  * About — hover-word image popover
  * ---------------------------------- */
+/* Photo words get a dotted underline so they read differently from real
+ * links (solid underline). */
 .reveal {
-  border-bottom: 1px solid var(--muted);
-  cursor: pointer;
-  transition: color 0.2s ease, border-color 0.2s ease;
+  text-decoration: underline dotted;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--muted);
+  text-underline-offset: 4px;
+  cursor: help;
+  transition: text-decoration-color 0.2s ease;
 }
 
 .reveal:hover,
-.reveal:focus-visible {
-  color: var(--fg);
-  border-color: var(--fg);
-  -webkit-text-stroke: 0.4px currentColor;
+.reveal:focus-visible,
+.reveal.pinned {
+  text-decoration-color: var(--fg);
   outline: none;
 }
 
+/* Photo and caption share one outlined card; the caption is a footer strip
+ * with a solid background so neither the boids nor the about-me text
+ * underneath can show through it. */
 .reveal-popover {
   position: fixed;
   top: 0;
@@ -657,47 +621,66 @@ a {
   z-index: 50;
   width: 260px;
   pointer-events: none;
+  background: var(--bg);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
   opacity: 0;
-  transform: translateY(6px) scale(0.96);
-  transform-origin: center bottom;
+  transform: translateY(4px);
   transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+/* Pinned: interactive so the image can be right-clicked / dragged / saved and
+ * the caption selected. */
+.reveal-popover.pinned {
+  pointer-events: auto;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.reveal-popover.pinned img {
+  cursor: default;
+  -webkit-user-drag: auto;
 }
 
 .reveal-popover.visible {
   opacity: 1;
-  transform: translateY(0) scale(1);
+  transform: none;
 }
 
 .reveal-popover img {
   display: block;
   width: 100%;
   height: auto; /* preserve the image's natural aspect ratio */
-  border-radius: 12px;
-  border: 1px solid var(--border);
   background: var(--surface);
-  box-shadow: var(--shadow-lg);
+}
+
+.reveal-placeholder {
+  display: none;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: var(--surface);
+}
+
+.reveal-popover.loading img {
+  display: none;
+}
+
+.reveal-popover.loading .reveal-placeholder {
+  display: block;
 }
 
 .reveal-caption {
   display: block;
-  width: fit-content;
-  margin: var(--space-2) auto 0;
-  padding: 2px 10px;
-  text-align: center;
+  padding: 6px 10px;
   font-size: 0.72rem;
-  color: var(--muted);
+  color: var(--fg);
   line-height: 1.4;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  box-shadow: var(--shadow-lg);
+  border-top: 1px solid var(--border);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .reveal-popover {
-    transform: none;
-    transition: opacity 0.15s ease;
-  }
+  .reveal-popover,
   .reveal-popover.visible {
     transform: none;
   }
@@ -708,56 +691,54 @@ a {
  * ---------------------------------- */
 .theme-toggle {
   position: fixed;
-  top: 16px;
-  right: 18px;
+  top: 18px;
+  right: 22px;
   z-index: 60;
-  width: 38px;
-  height: 38px;
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--surface);
-  color: var(--fg);
+  display: flex;
+  align-items: baseline;
+  gap: 0.5em;
+  padding: 4px 2px;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-size: var(--text-sm);
+  letter-spacing: 0.02em;
+  color: var(--muted);
   cursor: pointer;
-  box-shadow: var(--shadow);
-  transition: background 0.2s ease, border-color 0.2s ease,
-    transform 0.2s ease, color 0.35s ease;
 }
 
-.theme-toggle:hover {
-  border-color: var(--border-strong);
-  transform: translateY(-1px);
+.theme-toggle .sep {
+  opacity: 0.5;
 }
 
-.theme-toggle:active {
-  transform: scale(0.94);
+/* Active mode reads in full ink; the other stays muted. */
+:root:not([data-theme="dark"]) .theme-toggle .opt-light,
+:root[data-theme="dark"] .theme-toggle .opt-dark {
+  color: var(--fg);
+}
+
+/* Hover underlines the mode you'd switch to, like a link. */
+.theme-toggle .opt {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  text-decoration-color: transparent;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+}
+
+:root:not([data-theme="dark"]) .theme-toggle:hover .opt-dark,
+:root[data-theme="dark"] .theme-toggle:hover .opt-light {
+  text-decoration-color: currentColor;
 }
 
 .theme-toggle:focus-visible {
-  outline: 2px solid var(--fg);
-  outline-offset: 3px;
-}
-
-.theme-toggle svg {
-  width: 18px;
-  height: 18px;
-}
-
-.theme-toggle .icon-moon {
-  display: none;
-}
-
-:root[data-theme="dark"] .theme-toggle .icon-sun {
-  display: none;
-}
-
-:root[data-theme="dark"] .theme-toggle .icon-moon {
-  display: block;
+  outline: 1.5px solid var(--fg);
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .theme-toggle {
+  .theme-toggle .opt {
     transition: none;
   }
 }

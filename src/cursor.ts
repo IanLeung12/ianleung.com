@@ -28,9 +28,9 @@ let canvasPageLeft = 0;
 const buttonPageCenters: Array<{ x: number; y: number }> = buttons.map(() => ({ x: 0, y: 0 }));
 
 function measure() {
-  const maze = document.getElementById("maze");
-  if (maze) {
-    const r = maze.getBoundingClientRect();
+  const canvas = document.querySelector(".hero canvas");
+  if (canvas) {
+    const r = canvas.getBoundingClientRect();
     canvasPageLeft = r.left + window.scrollX;
     canvasPageTop = r.top + window.scrollY;
   }
@@ -71,13 +71,28 @@ function updateCursorState() {
   return { x: cursorX, y: cursorY, radius: currentRadius };
 }
 
+// Viewport position of a canvas's top-left corner. The hero canvas scrolls
+// with the page, so its origin moves; a position: fixed canvas (boids) passes
+// VIEWPORT_ORIGIN instead.
+type Origin = { left: number; top: number };
+export const VIEWPORT_ORIGIN: Origin = { left: 0, top: 0 };
+
+function heroOrigin(): Origin {
+  return { left: canvasPageLeft - window.scrollX, top: canvasPageTop - window.scrollY };
+}
+
+// Cursor position in canvas space.
+export function getCursorCanvasPos(origin: Origin = heroOrigin()): { x: number; y: number } {
+  return { x: cursorX - origin.left, y: cursorY - origin.top };
+}
+
 export function punchHole(ctx: CanvasRenderingContext2D) {
     ctx.save();
     ctx.globalCompositeOperation = "destination-out";
   const { x, y, radius } = updateCursorState();
   // Cursor coords are viewport-relative; the canvas scrolls with the page,
   // so map them into canvas space each frame.
-  const canvasRect = { left: canvasPageLeft - window.scrollX, top: canvasPageTop - window.scrollY };
+  const canvasRect = heroOrigin();
   const cx = x - canvasRect.left;
   const cy = y - canvasRect.top;
   const now = performance.now();
